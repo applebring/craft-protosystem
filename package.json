@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "start": "shopify theme dev --store my-dev-bhvxfr3m --port 9000"
+  },
+  "dependencies": {
+  }
+}
