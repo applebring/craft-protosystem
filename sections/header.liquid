@@ -74,6 +74,70 @@
       padding-top: 0.5rem;
     }
   }
+
+  /* ==========================================================================
+     全宽 (100% Width) & Hover 动画控制 CSS
+     ========================================================================== */
+  @media screen and (min-width: 990px) {
+    /* 1. Header 容器设置为相对定位基准，`header-menu` 不设置 relative，使下拉菜单能相对于整页/Header全宽居中 */
+    .header-wrapper {
+      {% comment %} position: relative; {% endcomment %}
+    }
+
+    {% comment %} header-menu {
+      position: static;
+    }
+
+    header-menu details {
+      position: static;
+    } {% endcomment %}
+
+    /* 2. 100% 全宽子菜单样式与淡入下滑动画 */
+    header-menu .header__submenu {
+      position: absolute;
+      left: 0;
+      top: 100%;
+      right: 0;
+      box-sizing: border-box;
+      background-color: var(--gradient-background, #fff);
+      padding: 3rem 5rem;
+      border-top: 1fr solid rgba(0,0,0,0.08);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+
+      /* 动画初始状态：透明且向上偏移 */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* 3. 多列布局（类似 KEF 菜单样式） */
+    header-menu details .header__submenu--fullwidth {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      {% comment %} max-width: var(--page-width, 1200px); {% endcomment %}
+      margin: 0 auto;
+    }
+
+    /* 4. Hover 触发显示与动画终止状态 */
+    header-menu details:hover > .header__submenu,
+    header-menu details[open] > .header__submenu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    }
+
+    /* 5. 延长底部响应区，防止鼠标划过间隙时菜单关闭 */
+    header-menu summary {
+      padding-bottom: 1.5rem;
+      cursor: pointer;
+    }
+  }
 </style>
 
 {%- style -%}
@@ -345,6 +409,7 @@
 
       this.createObserver();
     }
+
 
     setHeaderHeight() {
       document.documentElement.style.setProperty('--header-height', `${this.header.offsetHeight}px`);

@@ -1,6 +1,5 @@
 {% comment %}
   Renders a standard dropdown style menu for the header.
-
   Usage:
   {% render 'header-dropdown-menu' %}
 {% endcomment %}
@@ -16,67 +15,44 @@
                 id="HeaderMenu-{{ link.handle }}"
                 class="header__menu-item list-menu__item link focus-inset"
               >
-                <span
-                  {%- if link.child_active %}
-                    class="header__active-menu-item"
-                  {% endif %}
-                >
+                <span {%- if link.child_active %} class="header__active-menu-item"{% endif %}>
                   {{- link.title | escape -}}
                 </span>
                 {{- 'icon-caret.svg' | inline_asset_content -}}
               </summary>
-              <ul
+              <div
                 id="HeaderMenu-MenuList-{{ forloop.index }}"
-                class="header__submenu list-menu list-menu--disclosure color-{{ section.settings.menu_color_scheme }} gradient caption-large motion-reduce global-settings-popup"
-                role="list"
-                tabindex="-1"
+                class="header__submenu header__submenu--fullwidth list-menu color-{{ section.settings.menu_color_scheme }} gradient motion-reduce"
               >
                 {%- for childlink in link.links -%}
-                  <li>
-                    {%- if childlink.links == blank -%}
-                      <a
-                        id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                        href="{{ childlink.url }}"
-                        class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if childlink.current %} list-menu__item--active{% endif %}"
-                        {% if childlink.current %}
-                          aria-current="page"
-                        {% endif %}
-                      >
-                        {{ childlink.title | escape }}
-                      </a>
-                    {%- else -%}
-                      <details id="Details-HeaderSubMenu-{{ link.handle }}-{{ childlink.handle }}">
-                        <summary
-                          id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                          class="header__menu-item link link--text list-menu__item focus-inset caption-large"
-                        >
-                          <span>{{ childlink.title | escape }}</span>
-                          {{- 'icon-caret.svg' | inline_asset_content -}}
-                        </summary>
-                        <ul
-                          id="HeaderMenu-SubMenuList-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                          class="header__submenu list-menu motion-reduce"
-                        >
-                          {%- for grandchildlink in childlink.links -%}
-                            <li>
-                              <a
-                                id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                                href="{{ grandchildlink.url }}"
-                                class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if grandchildlink.current %} list-menu__item--active{% endif %}"
-                                {% if grandchildlink.current %}
-                                  aria-current="page"
-                                {% endif %}
-                              >
-                                {{ grandchildlink.title | escape }}
-                              </a>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      </details>
+                  <div class="header__submenu-column">
+                    <a
+                      id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+                      href="{{ childlink.url }}"
+                      class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if childlink.current %} list-menu__item--active{% endif %}"
+                      style="font-weight: bold; margin-bottom: 0.5rem;"
+                    >
+                      {{ childlink.title | escape }}
+                    </a>
+
+                    {%- if childlink.links != blank -%}
+                      <ul class="list-menu" role="list">
+                        {%- for grandchildlink in childlink.links -%}
+                          <li>
+                            <a
+                              id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
+                              href="{{ grandchildlink.url }}"
+                              class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if grandchildlink.current %} list-menu__item--active{% endif %}"
+                            >
+                              {{ grandchildlink.title | escape }}
+                            </a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
                     {%- endif -%}
-                  </li>
+                  </div>
                 {%- endfor -%}
-              </ul>
+              </div>
             </details>
           </header-menu>
         {%- else -%}
@@ -88,11 +64,7 @@
               aria-current="page"
             {% endif %}
           >
-            <span
-              {%- if link.current %}
-                class="header__active-menu-item"
-              {% endif %}
-            >
+            <span {%- if link.current %} class="header__active-menu-item"{% endif %}>
               {{- link.title | escape -}}
             </span>
           </a>

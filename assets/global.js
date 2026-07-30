@@ -67,7 +67,6 @@ class HTMLUpdateUtility {
     });
   }
 }
-
 document.querySelectorAll('[id^="Details-"] summary').forEach((summary) => {
   summary.setAttribute('role', 'button');
   summary.setAttribute('aria-expanded', summary.parentNode.hasAttribute('open'));
@@ -83,7 +82,6 @@ document.querySelectorAll('[id^="Details-"] summary').forEach((summary) => {
   if (summary.closest('header-drawer, menu-drawer')) return;
   summary.parentElement.addEventListener('keyup', onKeyUpEscape);
 });
-
 const trapFocusHandlers = {};
 
 function trapFocus(container, elementToFocus = container) {

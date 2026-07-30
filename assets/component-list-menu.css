@@ -28,3 +28,23 @@
   width: 10rem;
   padding: 0.5rem;
 }
+
+
+/* 鼠标经过 header-menu 包含的 details 时展开下拉菜单 */
+@media screen and (min-width: 990px) {
+  header-menu details:hover > .header__submenu {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* 解决鼠标移出 main link 与 submenu 之间的缝隙导致菜单瞬间关闭的问题 */
+  header-menu details {
+    /* position: relative; */
+  }
+  
+  header-menu details summary {
+    padding-bottom: 1rem; /* 确保 hover 区域连续 */
+  }
+}
