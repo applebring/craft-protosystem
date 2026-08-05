@@ -1,13 +1,13 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
+  /*
+   * ------------------------------------------------------------
+   * IMPORTANT: The contents of this file are auto-generated.
+   *
+   * This file may be updated by the Shopify admin theme editor
+   * or related systems. Please exercise caution as any changes
+   * made to this file may be overwritten.
+   * ------------------------------------------------------------
+   */
   "name": "t:sections.footer.name",
   "type": "footer",
   "sections": {
@@ -24,7 +24,7 @@
         "paragraph": {
           "type": "paragraph",
           "settings": {
-            "text": "<p>Subscribe to our mailing list for insider news, product launches, and more.</p>"
+            "text": "<p>Subscribe to get the latest on sales, discounts, new product releases, product guides and more.</p>"
           }
         },
         "email_form": {
@@ -46,19 +46,31 @@
     },
     "footer": {
       "type": "footer",
+      "blocks": {
+        "footer_link_list_1": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Quick links",
+            "menu": "footer"
+          }
+        }
+      },
+      "block_order": [
+        "footer_link_list_1"
+      ],
       "settings": {
         "color_scheme": "scheme-4",
         "newsletter_enable": false,
         "newsletter_heading": "Subscribe to our emails",
         "enable_follow_on_shop": true,
         "show_social": true,
-        "enable_country_selector": true,
-        "enable_language_selector": true,
+        "enable_country_selector": false,
+        "enable_language_selector": false,
         "payment_enable": true,
-        "show_policy": true,
+        "show_policy": false,
         "margin_top": 0,
         "padding_top": 0,
-        "padding_bottom": 36
+        "padding_bottom": 15
       }
     }
   },

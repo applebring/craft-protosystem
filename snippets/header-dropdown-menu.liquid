@@ -4,11 +4,34 @@
   {% render 'header-dropdown-menu' %}
 {% endcomment %}
 
+{%- comment -%}
+  解析一级菜单的图片映射配置 (Format: 菜单名称|图片URL，每行一个)
+{%- endcomment -%}
+{%- assign menu_image_map = '' -%}
+{%- if section.settings.menu_image_mapping != blank -%}
+  {%- assign menu_image_map = section.settings.menu_image_mapping | newline_to_br | split: '<br />' -%}
+{%- endif -%}
+
 <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
     {%- for link in section.settings.menu.links -%}
       <li>
         {%- if link.links != blank -%}
+          {%- comment -%}
+            获取当前一级菜单对应的默认图片
+          {%- endcomment -%}
+          {%- assign top_level_image = '' -%}
+          {%- for mapping in menu_image_map -%}
+            {%- assign mapping_parts = mapping | split: '|' -%}
+            {%- if mapping_parts.size == 2 -%}
+              {%- assign menu_name = mapping_parts[0] | strip -%}
+              {%- if menu_name == link.title -%}
+                {%- assign top_level_image = mapping_parts[1] | strip -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+
           <header-menu>
             <details id="Details-HeaderMenu-{{ forloop.index }}">
               <summary
@@ -20,38 +43,148 @@
                 </span>
                 {{- 'icon-caret.svg' | inline_asset_content -}}
               </summary>
+              
               <div
                 id="HeaderMenu-MenuList-{{ forloop.index }}"
-                class="header__submenu header__submenu--fullwidth list-menu color-{{ section.settings.menu_color_scheme }} gradient motion-reduce"
+                class="header__submenu header__submenu--image-layout color-{{ section.settings.menu_color_scheme }} gradient motion-reduce"
+                data-menu-handle="{{ link.handle }}"
+                data-default-image="{{ top_level_image }}"
+                data-default-caption="{{ link.title | escape }}"
               >
-                {%- for childlink in link.links -%}
-                  <div class="header__submenu-column">
-                    <a
-                      id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                      href="{{ childlink.url }}"
-                      class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if childlink.current %} list-menu__item--active{% endif %}"
-                      style="font-weight: bold; margin-bottom: 0.5rem;"
-                    >
-                      {{ childlink.title | escape }}
-                    </a>
+                {%- comment -%}
+                  第一列：二级菜单（一级子菜单）
+                {%- endcomment -%}
+                <div class="header__submenu-column header__submenu-column--level2">
+                  <ul class="list-menu" role="list">
+                    {%- for childlink in link.links -%}
+                      {%- comment -%} 解析二级菜单的 "菜单名称 | 图片URL" 格式 {%- endcomment -%}
+                      {%- assign child_parts = childlink.title | split: '|' -%}
+                      {%- assign child_title = child_parts[0] | strip -%}
+                      {%- assign child_image = '' -%}
+                      {%- if child_parts.size > 1 -%}
+                        {%- assign child_image = child_parts[1] | strip -%}
+                      {%- endif -%}
 
-                    {%- if childlink.links != blank -%}
-                      <ul class="list-menu" role="list">
-                        {%- for grandchildlink in childlink.links -%}
-                          <li>
-                            <a
-                              id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                              href="{{ grandchildlink.url }}"
-                              class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if grandchildlink.current %} list-menu__item--active{% endif %}"
-                            >
-                              {{ grandchildlink.title | escape }}
-                            </a>
-                          </li>
-                        {%- endfor -%}
-                      </ul>
-                    {%- endif -%}
+                      <li>
+                        <a
+                          id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+                          href="{{ childlink.url }}"
+                          class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if childlink.current %} list-menu__item--active{% endif %}{% if forloop.first %} active-level2{% endif %}"
+                          data-level2-handle="{{ childlink.handle }}"
+                          data-level2-index="{{ forloop.index0 }}"
+                          data-image-url="{{ child_image }}"
+                          data-image-caption="{{ child_title | escape }}"
+                          onmouseenter="
+                            this.classList.add('active-level2');
+                            const parentMenu = this.closest('.header__submenu');
+                            
+                            // 取消其他二级菜单高亮
+                            parentMenu.querySelectorAll('[data-level2-handle]').forEach(el => {
+                              if(el !== this) el.classList.remove('active-level2');
+                            });
+                            
+                            // 切换三级菜单显示
+                            parentMenu.querySelectorAll('[data-level3-for]').forEach(el => {
+                              if(el.dataset.level3For === '{{ childlink.handle }}') {
+                                el.style.display = 'block';
+                              } else {
+                                el.style.display = 'none';
+                              }
+                            });
+
+                            // 切换右侧图片显示（优先用二级菜单图片，没有则回退到一级菜单默认图）
+                            const imgContainer = parentMenu.querySelector('.header__submenu-column--image');
+                            if (imgContainer) {
+                              const imgEl = imgContainer.querySelector('.menu-featured-image');
+                              const captionEl = imgContainer.querySelector('.menu-image-caption');
+                              const placeholderEl = imgContainer.querySelector('.menu-image-placeholder');
+                              
+                              const targetUrl = this.dataset.imageUrl || parentMenu.dataset.defaultImage;
+                              const targetCaption = this.dataset.imageUrl ? this.dataset.imageCaption : parentMenu.dataset.defaultCaption;
+
+                              if (targetUrl) {
+                                if (imgEl) {
+                                  imgEl.src = targetUrl;
+                                  imgEl.alt = targetCaption;
+                                  imgEl.style.display = 'block';
+                                }
+                                if (captionEl) {
+                                  captionEl.textContent = targetCaption;
+                                  captionEl.style.display = 'block';
+                                }
+                                if (placeholderEl) placeholderEl.style.display = 'none';
+                              } else {
+                                if (imgEl) imgEl.style.display = 'none';
+                                if (captionEl) captionEl.style.display = 'none';
+                                if (placeholderEl) placeholderEl.style.display = 'flex';
+                              }
+                            }
+                          "
+                        >
+                          {{ child_title | escape }}
+                          {%- if childlink.links != blank -%}
+                            <span class="level2-arrow">›</span>
+                          {%- endif -%}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </div>
+
+                {%- comment -%}
+                  第二列：三级菜单
+                {%- endcomment -%}
+                <div class="header__submenu-column header__submenu-column--level3">
+                  {%- for childlink in link.links -%}
+                    <div class="level3-container" data-level3-for="{{ childlink.handle }}" style="{% unless forloop.first %}display: none;{% endunless %}">
+                      {%- if childlink.links != blank -%}
+                        <ul class="list-menu" role="list">
+                          {%- for grandchildlink in childlink.links -%}
+                            {%- assign grandchild_parts = grandchildlink.title | split: '|' -%}
+                            {%- assign grandchild_title = grandchild_parts[0] | strip -%}
+                            <li>
+                              <a
+                                id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
+                                href="{{ grandchildlink.url }}"
+                                class="header__menu-item list-menu__item link link--text focus-inset caption-large level3-item{% if grandchildlink.current %} list-menu__item--active{% endif %}"
+                              >
+                                {{ grandchild_title | escape }}
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- else -%}
+                        <p style="color: #999; padding: 1rem 1.2rem; font-size: 0.9rem; margin: 0;"></p>
+                      {%- endif -%}
+                    </div>
+                  {%- endfor -%}
+                </div>
+
+                {%- comment -%}
+                  第三列：动态图片区域（默认展示一级菜单配置的图片）
+                {%- endcomment -%}
+                <div class="header__submenu-column header__submenu-column--image">
+                  <div class="menu-image-wrapper">
+                    <img
+                      src="{{ top_level_image }}"
+                      alt="{{ link.title | escape }}"
+                      class="menu-featured-image"
+                      loading="lazy"
+                      width="auto"
+                      height="auto"
+                      style="{% if top_level_image == blank %}display: none;{% endif %}"
+                    >
+                    <p class="menu-image-caption" style="{% if top_level_image == blank %}display: none;{% endif %}">
+                      {{ link.title | escape }}
+                    </p>
+                    
+                    <div class="menu-image-placeholder" style="{% if top_level_image != blank %}display: none;{% endif %}">
+                      <div class="placeholder-icon">🖼️</div>
+                      <div class="placeholder-text">未配置图片<br><small>请在后台或菜单设置中配置</small></div>
+                    </div>
                   </div>
-                {%- endfor -%}
+                </div>
+
               </div>
             </details>
           </header-menu>

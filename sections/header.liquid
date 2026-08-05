@@ -79,18 +79,9 @@
      全宽 (100% Width) & Hover 动画控制 CSS
      ========================================================================== */
   @media screen and (min-width: 990px) {
-    /* 1. Header 容器设置为相对定位基准，`header-menu` 不设置 relative，使下拉菜单能相对于整页/Header全宽居中 */
     .header-wrapper {
       {% comment %} position: relative; {% endcomment %}
     }
-
-    {% comment %} header-menu {
-      position: static;
-    }
-
-    header-menu details {
-      position: static;
-    } {% endcomment %}
 
     /* 2. 100% 全宽子菜单样式与淡入下滑动画 */
     header-menu .header__submenu {
@@ -101,7 +92,7 @@
       box-sizing: border-box;
       background-color: var(--gradient-background, #fff);
       padding: 3rem 5rem;
-      border-top: 1fr solid rgba(0,0,0,0.08);
+      border-top: 1px solid rgba(0,0,0,0.08);
       box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 
       /* 动画初始状态：透明且向上偏移 */
@@ -138,6 +129,165 @@
       cursor: pointer;
     }
   }
+
+  /* ==========================================================================
+     菜单图片布局样式
+     ========================================================================== */
+  .header__submenu--image-layout {
+    display: grid !important;
+    grid-template-columns: 1fr 1.2fr 1fr !important;
+    gap: 2rem !important;
+    {% comment %} padding: 2.5rem 4rem !important;
+    max-width: var(--page-width, 1200px);
+    margin: 0 auto; {% endcomment %}
+    width: 100%;
+  }
+
+  .header__submenu-column--level2 .list-menu__item {
+    padding: 0.8rem 1.2rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  .header__submenu-column--level2 .list-menu__item:hover {
+    background-color: rgba(0,0,0,0.06);
+  }
+
+  .header__submenu-column--level2 .list-menu__item.active-level2 {
+    background-color: rgba(0,0,0,0.08);
+    color: var(--color-accent, #000);
+  }
+
+  .header__submenu-column--level2 .level2-arrow {
+    float: right;
+    opacity: 0.3;
+    transition: all 0.2s ease;
+  }
+
+  .header__submenu-column--level2 .list-menu__item:hover .level2-arrow {
+    opacity: 0.8;
+    transform: translateX(2px);
+  }
+
+  .header__submenu-column--level3 {
+    border-left: 1px solid rgba(0,0,0,0.06);
+    padding-left: 2rem;
+  }
+
+  .header__submenu-column--level3 .level3-container {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .header__submenu-column--level3 .level3-container::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .header__submenu-column--level3 .level3-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .header__submenu-column--level3 .level3-container::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 4px;
+  }
+
+  .header__submenu-column--level3 .level3-item {
+    padding: 0.5rem 1.2rem;
+    display: block;
+    font-size: 0.95rem;
+    transition: all 0.15s ease;
+    border-radius: 4px;
+  }
+
+  .header__submenu-column--level3 .level3-item:hover {
+    background-color: rgba(0,0,0,0.04);
+    color: var(--color-accent, #000);
+  }
+
+  .header__submenu-column--image {
+    border-left: 1px solid rgba(0,0,0,0.06);
+    padding-left: 2rem;
+  }
+
+  .header__submenu-column--image .menu-image-wrapper {
+    position: sticky;
+    top: 0;
+  }
+
+  .header__submenu-column--image .menu-featured-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    max-height: 350px;
+    display: block;
+  }
+
+  .header__submenu-column--image .menu-image-placeholder {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: #aaa;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .header__submenu-column--image .menu-image-placeholder .placeholder-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .header__submenu-column--image .menu-image-placeholder .placeholder-text {
+    font-size: 0.85rem;
+  }
+
+  .header__submenu-column--image .menu-thumbnails {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .header__submenu-column--image .menu-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .header__submenu-column--image .menu-thumbnail:hover {
+    border-color: #000;
+    transform: scale(1.05);
+  }
+
+  .header__submenu-column--image .menu-image-caption {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.8rem;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 990px) {
+    .header__submenu--image-layout {
+      grid-template-columns: 1fr !important;
+      padding: 1.5rem !important;
+      gap: 1.5rem !important;
+    }
+    
+    .header__submenu-column--level3,
+    .header__submenu-column--image {
+      border-left: none !important;
+      padding-left: 0 !important;
+    }
+  }
 </style>
 
 {%- style -%}
@@ -146,7 +296,7 @@
   }
 
   .section-header {
-    position: sticky; /* This is for fixing a Safari z-index issue. PR #2147 */
+    position: sticky;
     margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 }}px;
   }
 
