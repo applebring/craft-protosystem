@@ -96,3 +96,13 @@
     min-height: 20rem;
   }
 }
+
+.breadcrumbs{
+  display: flex;
+}
+.breadcrumbs-collection ol{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
