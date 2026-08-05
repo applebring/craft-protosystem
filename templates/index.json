@@ -68,6 +68,7 @@
       }
     },
     "rich_text": {
+      "disabled": true,
       "type": "rich-text",
       "blocks": {
         "heading": {
@@ -91,6 +92,7 @@
       }
     },
     "collage-0": {
+      "disabled": true,
       "type": "collage",
       "blocks": {
         "collection_YcD3Vn": {
