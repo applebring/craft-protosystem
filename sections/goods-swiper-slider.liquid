@@ -50,7 +50,7 @@
     box-sizing: border-box;
     height: auto;
     text-align: center;
-    background: #ffffff;
+    background: {{ section.settings.card_bg_color | default: '#ffffff' }}; /* 自定义卡片背景色 */
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
@@ -125,7 +125,7 @@
   /* ===== 文本与价格内容区 ===== */
   #shopify-section-{{ section.id }} .slide-content {
     padding: 10px 8px 12px;
-    background: #ffffff;
+    background: {{ section.settings.card_bg_color | default: '#ffffff' }}; /* 自定义卡片下方文本区背景色 */
     border-top: 1px solid #edf2f7;
     display: flex;
     flex-direction: column;
@@ -551,8 +551,15 @@
     {
       "type": "color",
       "id": "bg_color",
-      "label": "Background Color",
+      "label": "Container Background Color",
       "default": "#f7f9fc"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card Background Color",
+      "default": "#ffffff",
+      "info": "Set the background color for individual product/category cards."
     },
     {
       "type": "header",

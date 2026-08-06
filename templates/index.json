@@ -111,6 +111,7 @@
         "color_scheme": "",
         "use_custom_bg": false,
         "background_color": "#f5f5f5",
+        "card_background_color": "#ffffff",
         "padding_top": 36,
         "padding_bottom": 36
       }
