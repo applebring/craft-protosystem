@@ -72,8 +72,8 @@
         "media_size": "medium",
         "constrain_to_viewport": true,
         "media_fit": "contain",
-        "gallery_layout": "stacked",
-        "mobile_thumbnails": "hide",
+        "gallery_layout": "thumbnail_slider",
+        "mobile_thumbnails": "show",
         "media_position": "left",
         "image_zoom": "lightbox",
         "hide_variants": false,
@@ -93,6 +93,26 @@
         "padding_bottom": 0
       }
     },
+    "1786008214140d6aba": {
+      "type": "apps",
+      "blocks": {
+        "ag_product_reviews_app_block_review_list_TEDNef": {
+          "type": "shopify://apps/ag-product-reviews/blocks/app-block-review-list/c4e1e9ca-4d46-4e76-bc39-7e42417cb327",
+          "settings": {
+            "air_blockreviews_summaryHeading": "Reviews",
+            "air_blockreviews_layout": "list",
+            "air_blockreviews_singleStarColor": "#16a086",
+            "air_blockreviews_primaryColor": "#121212"
+          }
+        }
+      },
+      "block_order": [
+        "ag_product_reviews_app_block_review_list_TEDNef"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
     "related-products": {
       "type": "related-products",
       "settings": {
@@ -109,26 +129,6 @@
         "show_rating": false,
         "padding_top": 36,
         "padding_bottom": 68
-      }
-    },
-    "1786008214140d6aba": {
-      "type": "apps",
-      "blocks": {
-        "ag_product_reviews_app_block_review_list_TEDNef": {
-          "type": "shopify://apps/ag-product-reviews/blocks/app-block-review-list/c4e1e9ca-4d46-4e76-bc39-7e42417cb327",
-          "settings": {
-            "air_blockreviews_summaryHeading": "Reviews",
-            "air_blockreviews_layout": "list",
-            "air_blockreviews_singleStarColor": "#16A086",
-            "air_blockreviews_primaryColor": "#121212"
-          }
-        }
-      },
-      "block_order": [
-        "ag_product_reviews_app_block_review_list_TEDNef"
-      ],
-      "settings": {
-        "include_margins": true
       }
     }
   },
