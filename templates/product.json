@@ -23,6 +23,10 @@
           "type": "title",
           "settings": {}
         },
+        "ag_product_reviews_app_summary_block_zVpNRJ": {
+          "type": "shopify://apps/ag-product-reviews/blocks/app-summary-block/c4e1e9ca-4d46-4e76-bc39-7e42417cb327",
+          "settings": {}
+        },
         "rating_BURmhh": {
           "type": "rating",
           "settings": {}
@@ -63,6 +67,7 @@
       "block_order": [
         "text",
         "title",
+        "ag_product_reviews_app_summary_block_zVpNRJ",
         "rating_BURmhh",
         "price",
         "variant_picker",
