@@ -1,0 +1,337 @@
+{%- comment -%}
+  ========================================
+  Featured Categories Section
+  Integrated with Custom Background Color & Dawn Multicolumn Styles.
+  ========================================
+{%- endcomment -%}
+
+{{ 'section-featured-categories.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  /* 自定义背景颜色控制 */
+  .section-{{ section.id }}-custom-bg {
+    {%- if section.settings.use_custom_bg and section.settings.background_color != blank -%}
+      background-color: {{ section.settings.background_color }};
+      background-image: none; /* 覆盖默认渐变背景 */
+    {%- endif -%}
+  }
+
+  /* 图片位置与布局样式控制 */
+  .section-{{ section.id }} .category-card {
+    display: flex;
+    height: 100%;
+  }
+
+  /* 默认上侧 (Top) */
+  .section-{{ section.id }} .category-card--image-top {
+    flex-direction: column;
+  }
+
+  /* 响应式：在桌面端/平板生效左右布局，移动端自动切回上下排列以确保体验 */
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }} .category-card--image-left {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .section-{{ section.id }} .category-card--image-right {
+      flex-direction: row-reverse;
+      align-items: center;
+    }
+
+    /* 当左右排列时，图片与内容平分宽度 (各占 50%) */
+    .section-{{ section.id }} .category-card--image-left .category-image__wrapper,
+    .section-{{ section.id }} .category-card--image-right .category-image__wrapper {
+      width: 50%;
+      flex-shrink: 0;
+    }
+
+    .section-{{ section.id }} .category-card--image-left .category-card__info,
+    .section-{{ section.id }} .category-card--image-right .category-card__info {
+      width: 50%;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  /* 移动端恢复竖排布局 */
+  @media screen and (max-width: 749px) {
+    .section-{{ section.id }} .category-card--image-left,
+    .section-{{ section.id }} .category-card--image-right {
+      flex-direction: column;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="featured-categories section-{{ section.id }} section-{{ section.id }}-custom-bg color-{{ section.settings.color_scheme }} gradient{% if section.settings.section_title == blank %} no-heading{% endif %}">
+  <div
+    class="page-width section-{{ section.id }}-padding isolate{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    {% if settings.animations_reveal_on_scroll %}
+      data-cascade
+    {% endif %}
+  >
+    {%- if section.settings.section_title != blank -%}
+      <div class="title-wrapper-with-link title-wrapper--no-top-margin featured-categories__title">
+        <h2 class="title inline-richtext {{ section.settings.heading_size }}">
+          {{ section.settings.section_title | escape }}
+        </h2>
+      </div>
+    {%- endif -%}
+
+    <div class="categories-grid grid grid--{{ section.settings.columns_desktop }}-col-desktop grid--1-col-tablet-down">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.image == blank and block.settings.title == blank -%}
+          {%- continue -%}
+        {%- endif -%}
+
+        <div
+          class="category-item grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          {{ block.shopify_attributes }}
+          {% if settings.animations_reveal_on_scroll %}
+            data-cascade
+            style="--animation-order: {{ forloop.index }};"
+          {% endif %}
+        >
+          <div class="category-card content-container category-card--image-{{ section.settings.image_position }}">
+            {%- if block.settings.image != blank -%}
+              <div class="category-image__wrapper">
+                <div class="media media--transparent media--hover-effect" style="padding-bottom: 66.66%;">
+                  {%- assign image = block.settings.image -%}
+                  <img
+                    src="{{ image | img_url: '600x' }}"
+                    srcset="
+                      {{ image | img_url: '400x' }} 400w,
+                      {{ image | img_url: '600x' }} 600w,
+                      {{ image | img_url: '800x' }} 800w
+                    "
+                    sizes="(min-width: 990px) calc((100vw - 100px) / {{ section.settings.columns_desktop }}), (min-width: 750px) calc((100vw - 100px) / 2), 100vw"
+                    alt="{{ image.alt | default: block.settings.title | escape }}"
+                    loading="lazy"
+                    width="{{ image.width }}"
+                    height="{{ image.height }}"
+                    class="category-card__image"
+                  >
+                </div>
+              </div>
+            {%- else -%}
+              <div class="category-image__wrapper">
+                <div class="media media--transparent" style="padding-bottom: 66.66%;">
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              </div>
+            {%- endif -%}
+
+            <div class="category-card__info">
+              {%- if block.settings.title != blank -%}
+                <h3 class="category-title inline-richtext">{{ block.settings.title | escape }}</h3>
+              {%- endif -%}
+
+              {%- if block.settings.description != blank -%}
+                <p class="category-description rte">{{ block.settings.description | escape }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.link != blank -%}
+                <a href="{{ block.settings.link }}" class="link animate-arrow shop-now-link">
+                  {{- 'general.shop_now' | t -}}
+                  <span class="svg-wrapper">
+                    <span class="icon-wrap">&nbsp;{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+                  </span>
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Featured categories",
+  "class": "section",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Heading",
+      "default": "Featured Categories"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3,
+      "label": "Number of columns on desktop"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top (上侧)"
+        },
+        {
+          "value": "left",
+          "label": "Left (左侧)"
+        },
+        {
+          "value": "right",
+          "label": "Right (右侧)"
+        }
+      ],
+      "default": "top",
+      "label": "Image position relative to text",
+      "info": "Applies on desktop view"
+    },
+    {
+      "type": "header",
+      "content": "Background Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_bg",
+      "label": "Enable custom background color",
+      "default": false,
+      "info": "Overrides the theme color scheme background"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Custom background color",
+      "default": "#F5F5F5"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Category image",
+          "info": "Recommended size: 600x400px"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Category Name"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "Briefly describe your category highlights"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured categories",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "title": "Accessories Deals",
+            "description": "Up to 50% off on accessories",
+            "link": "/collections/accessories"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Energy Automation",
+            "description": "Use automation to save energy",
+            "link": "/collections/automation"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Home Security",
+            "description": "Enjoy a greater level of home security",
+            "link": "/collections/security"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

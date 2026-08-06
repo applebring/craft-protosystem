@@ -67,6 +67,47 @@
         "marginmobile": "0px 0px 0px 0px"
       }
     },
+    "featured-category": {
+  "type": "featured-category",
+  "settings": {
+    "section_title": "Popular Collections",
+    "columns_desktop": 3
+  },
+  "blocks": {
+    "category_block_1": {
+      "type": "category",
+      "settings": {
+        "image": "shopify:\/\/shop_images\/accessories-deal.jpg",
+        "title": "Accessories Deals",
+        "description": "Up to 50% off on premium accessories",
+        "link": "shopify:\/\/collections\/accessories"
+      }
+    },
+    "category_block_2": {
+      "type": "category",
+      "settings": {
+        "image": "shopify:\/\/shop_images\/energy-automation.jpg",
+        "title": "Energy Automation",
+        "description": "Smart devices designed to reduce power consumption",
+        "link": "shopify:\/\/collections\/automation"
+      }
+    },
+    "category_block_3": {
+      "type": "category",
+      "settings": {
+        "image": "shopify:\/\/shop_images\/home-security.jpg",
+        "title": "Home Security",
+        "description": "Protect your home with modern smart locks and cameras",
+        "link": "shopify:\/\/collections\/security"
+      }
+    }
+  },
+  "block_order": [
+    "category_block_1",
+    "category_block_2",
+    "category_block_3"
+  ]
+},
     "rich_text": {
       "type": "rich-text",
       "blocks": {
@@ -382,6 +423,7 @@
   },
   "order": [
     "hero_carousel_craft",
+    "featured-category",
     "rich_text",
     "collage-0",
     "featured_collection_aE3rWy",
