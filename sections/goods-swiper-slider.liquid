@@ -22,16 +22,31 @@
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
     box-sizing: border-box;
+    opacity: 0; /* JS 初始化前隐藏，防闪烁 */
+    transition: opacity 0.3s ease-in-out;
   }
 
+  /* JS 完成 Swiper 初始化后平滑渐现 */
+  #shopify-section-{{ section.id }} .swiper-container-custom.is-initialized,
+  #shopify-section-{{ section.id }} .swiper-container-custom.swiper-initialized {
+    opacity: 1;
+  }
+
+  /* ===== Swiper Wrapper & Pre-layout ===== */
   #shopify-section-{{ section.id }} .swiper-wrapper {
     display: flex !important;
     flex-wrap: nowrap !important;
     box-sizing: border-box;
     transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+    gap: 16px; /* 预渲染默认间距 */
   }
 
-  /* ===== Prevent Slide Layout Collapse ===== */
+  /* 当 Swiper JS 激活后恢复 Swiper 原生 margin 计算 */
+  #shopify-section-{{ section.id }} .swiper-container-custom.swiper-initialized .swiper-wrapper {
+    gap: 0;
+  }
+
+  /* ===== 核心：防止闪烁大图的纯 CSS 预渲染宽度约束 ===== */
   #shopify-section-{{ section.id }} .swiper-slide {
     flex-shrink: 0 !important;
     box-sizing: border-box;
@@ -42,6 +57,31 @@
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    /* 桌面端默认预设 5 列比例：(100% - 4个gap*16px) / 5 */
+    width: calc((100% - 64px) / 5);
+    flex-basis: calc((100% - 64px) / 5);
+  }
+
+  /* 响应式断点预渲染，确保手机/平板打开时也是正确比例 */
+  @media (max-width: 1023px) {
+    #shopify-section-{{ section.id }} .swiper-slide {
+      width: calc((100% - 35px) / 3.5);
+      flex-basis: calc((100% - 35px) / 3.5);
+    }
+  }
+
+  @media (max-width: 479px) {
+    #shopify-section-{{ section.id }} .swiper-slide {
+      width: calc((100% - 8px) / 1.8);
+      flex-basis: calc((100% - 8px) / 1.8);
+    }
+  }
+
+  /* Swiper JS 加载完成后，宽度权限移交给 Swiper 内部 JS 动态计算 */
+  #shopify-section-{{ section.id }} .swiper-container-custom.swiper-initialized .swiper-slide {
+    width: auto;
+    flex-basis: auto;
   }
 
   #shopify-section-{{ section.id }} .swiper-slide:hover {
@@ -177,104 +217,102 @@
   }
 {%- endstyle -%}
 
-<!-- ===== Load Swiper CDN ===== -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
 <div class="section-{{ section.id }}-padding">
-  <div class="swiper-container-custom page-width" id="Swiper-{{ section.id }}">
-    <div class="swiper-wrapper">
-      {%- if section.blocks.size > 0 -%}
-        {%- for block in section.blocks -%}
-          {%- liquid
-            assign mode = section.settings.display_mode
-            assign item_product = block.settings.product
-            assign item_collection = block.settings.collection
-            
-            assign item_image = nil
-            assign item_title = ''
-            assign item_url = '#'
+  <div class="page-width page-width-desktop animate--slide-in">
+    <div class="swiper-container-custom" id="Swiper-{{ section.id }}">
+      <div class="swiper-wrapper">
+        {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign mode = section.settings.display_mode
+              assign item_product = block.settings.product
+              assign item_collection = block.settings.collection
+              
+              assign item_image = nil
+              assign item_title = ''
+              assign item_url = '#'
 
-            if mode == 'products' and item_product != blank
-              assign item_image = item_product.featured_image
-              assign item_title = item_product.title
-              assign item_url = item_product.url
-            elsif mode == 'collections' and item_collection != blank
-              assign item_image = item_collection.featured_image | default: item_collection.products.first.featured_image
-              assign item_title = item_collection.title
-              assign item_url = item_collection.url
-            endif
+              if mode == 'products' and item_product != blank
+                assign item_image = item_product.featured_image
+                assign item_title = item_product.title
+                assign item_url = item_product.url
+              elsif mode == 'collections' and item_collection != blank
+                assign item_image = item_collection.featured_image | default: item_collection.products.first.featured_image
+                assign item_title = item_collection.title
+                assign item_url = item_collection.url
+              endif
 
-            if block.settings.custom_title != blank
-              assign item_title = block.settings.custom_title
-            endif
-          -%}
+              if block.settings.custom_title != blank
+                assign item_title = block.settings.custom_title
+              endif
+            -%}
 
-          <div class="swiper-slide" {{ block.shopify_attributes }}>
-            <a href="{{ item_url }}" class="swiper-slide-link">
-              {%- if item_image != blank -%}
-                {{
-                  item_image
-                  | image_url: width: 600
-                  | image_tag:
-                    loading: 'lazy',
-                    sizes: '(min-width: 1200px) 240px, (min-width: 750px) 33vw, 50vw',
-                    widths: '200, 300, 400, 600',
-                    alt: item_title | escape
-                }}
-              {%- else -%}
-                {%- if mode == 'products' -%}
-                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            <div class="swiper-slide" {{ block.shopify_attributes }}>
+              <a href="{{ item_url }}" class="swiper-slide-link">
+                {%- if item_image != blank -%}
+                  {{
+                    item_image
+                    | image_url: width: 600
+                    | image_tag:
+                      loading: 'lazy',
+                      sizes: '(min-width: 1200px) 240px, (min-width: 750px) 33vw, 50vw',
+                      widths: '200, 300, 400, 600',
+                      alt: item_title | escape
+                  }}
                 {%- else -%}
-                  {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
-                {%- endif -%}
-              {%- endif -%}
-
-              {%- if item_title != blank -%}
-                <div class="slide-label">{{ item_title | escape }}</div>
-              {%- elsif item_image == blank -%}
-                <div class="slide-label">
                   {%- if mode == 'products' -%}
-                    Sample Product
+                    {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
                   {%- else -%}
-                    Sample Collection
+                    {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
                   {%- endif -%}
-                </div>
-              {%- endif -%}
-            </a>
-          </div>
-        {%- endfor -%}
-      {%- else -%}
-        {%- comment -%} Default Placeholder Slides {%- endcomment -%}
-        {%- assign default_names = "DOVEDALE,ASTON,SUPER LINTON,LINTON,SUPER DENTON,HERITAGE,ELYSIAN,EVOKE" | split: "," -%}
-        {%- for name in default_names -%}
-          <div class="swiper-slide">
-            <a href="#" class="swiper-slide-link">
-              <img 
-                src="https://picsum.photos/seed/{{ name | handle }}/400/300" 
-                alt="{{ name }}" 
-                loading="lazy" 
-                width="400" 
-                height="300"
-              >
-              <div class="slide-label">{{ name }}</div>
-            </a>
-          </div>
-        {%- endfor -%}
-      {%- endif -%}
-    </div>
+                {%- endif -%}
 
-    <!-- Navigation Arrows -->
-    <button class="swiper-button-prev-custom" aria-label="Previous slide">
-      <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-    </button>
-    <button class="swiper-button-next-custom" aria-label="Next slide">
-      <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
-    </button>
+                {%- if item_title != blank -%}
+                  <div class="slide-label">{{ item_title | escape }}</div>
+                {%- elsif item_image == blank -%}
+                  <div class="slide-label">
+                    {%- if mode == 'products' -%}
+                      Sample Product
+                    {%- else -%}
+                      Sample Collection
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </a>
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          {%- comment -%} Default Placeholder Slides {%- endcomment -%}
+          {%- assign default_names = "DOVEDALE,ASTON,SUPER LINTON,LINTON,SUPER DENTON,HERITAGE,ELYSIAN,EVOKE" | split: "," -%}
+          {%- for name in default_names -%}
+            <div class="swiper-slide">
+              <a href="#" class="swiper-slide-link">
+                <img 
+                  src="https://picsum.photos/seed/{{ name | handle }}/400/300" 
+                  alt="{{ name }}" 
+                  loading="lazy" 
+                  width="400" 
+                  height="300"
+                >
+                <div class="slide-label">{{ name }}</div>
+              </a>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
 
-    <!-- Bottom Progress Bar -->
-    <div class="swiper-progress-bar">
-      <div class="swiper-progress-fill"></div>
+      <!-- Navigation Arrows -->
+      <button class="swiper-button-prev-custom" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
+      <button class="swiper-button-next-custom" aria-label="Next slide">
+        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+      </button>
+
+      <!-- Bottom Progress Bar -->
+      <div class="swiper-progress-bar">
+        <div class="swiper-progress-fill"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -332,7 +370,10 @@
           prevEl: sectionContainer.querySelector('.swiper-button-prev-custom'),
         },
         on: {
-          init: function () { updateProgressBar(this); },
+          init: function () { 
+            updateProgressBar(this);
+            sectionContainer.classList.add('is-initialized');
+          },
           progress: function () { updateProgressBar(this); },
           resize: function () { updateProgressBar(this); },
           observerUpdate: function() { 

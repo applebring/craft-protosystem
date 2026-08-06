@@ -165,13 +165,15 @@
         "max_width": 1200,
         "bg_color": "#f7f9fc",
         "padding_top": 36,
+        "mode":"products",
         "padding_bottom": 36
       },
       "blocks": {
         "slide_1": {
           "type": "slide",
           "settings": {
-            "title": "DOVEDALE"
+            "title": "DOVEDALE",
+
           }
         },
         "slide_2": {
@@ -197,6 +199,18 @@
           "settings": {
             "title": "SUPER DENTON"
           }
+        },
+        "slide_6": {
+          "type": "slide",
+          "settings": {
+            "title": "SUPER DENTON"
+          }
+        },
+        "slide_7": {
+          "type": "slide",
+          "settings": {
+            "title": "SUPER DENTON"
+          }
         }
       },
       "block_order": [
@@ -204,7 +218,9 @@
         "slide_2",
         "slide_3",
         "slide_4",
-        "slide_5"
+        "slide_5",
+        "slide_6",
+        "slide_7",
       ]
     },
     // "product-list-swiper": {
