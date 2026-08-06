@@ -15,18 +15,17 @@
   #shopify-section-{{ section.id }} .swiper-container-custom {
     width: 100%;
     margin: 0 auto;
-    padding: 20px 16px 60px;
+    padding: 20px 16px 70px;
     position: relative;
     overflow: hidden;
     background: {{ section.settings.bg_color }};
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
     box-sizing: border-box;
-    opacity: 0; /* JS 初始化前隐藏，防闪烁 */
+    opacity: 0;
     transition: opacity 0.3s ease-in-out;
   }
 
-  /* JS 完成 Swiper 初始化后平滑渐现 */
   #shopify-section-{{ section.id }} .swiper-container-custom.is-initialized,
   #shopify-section-{{ section.id }} .swiper-container-custom.swiper-initialized {
     opacity: 1;
@@ -38,15 +37,14 @@
     flex-wrap: nowrap !important;
     box-sizing: border-box;
     transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
-    gap: 16px; /* 预渲染默认间距 */
+    gap: 16px;
   }
 
-  /* 当 Swiper JS 激活后恢复 Swiper 原生 margin 计算 */
   #shopify-section-{{ section.id }} .swiper-container-custom.swiper-initialized .swiper-wrapper {
     gap: 0;
   }
 
-  /* ===== 核心：防止闪烁大图的纯 CSS 预渲染宽度约束 ===== */
+  /* ===== Swiper Slide 卡片样式 ===== */
   #shopify-section-{{ section.id }} .swiper-slide {
     flex-shrink: 0 !important;
     box-sizing: border-box;
@@ -57,13 +55,12 @@
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative; /* 供 Badge 绝对定位 */
 
-    /* 桌面端默认预设 5 列比例：(100% - 4个gap*16px) / 5 */
     width: calc((100% - 64px) / 5);
     flex-basis: calc((100% - 64px) / 5);
   }
 
-  /* 响应式断点预渲染，确保手机/平板打开时也是正确比例 */
   @media (max-width: 1023px) {
     #shopify-section-{{ section.id }} .swiper-slide {
       width: calc((100% - 35px) / 3.5);
@@ -78,7 +75,6 @@
     }
   }
 
-  /* Swiper JS 加载完成后，宽度权限移交给 Swiper 内部 JS 动态计算 */
   #shopify-section-{{ section.id }} .swiper-container-custom.swiper-initialized .swiper-slide {
     width: auto;
     flex-basis: auto;
@@ -92,9 +88,28 @@
   #shopify-section-{{ section.id }} .swiper-slide-link {
     text-decoration: none;
     color: inherit;
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
+  }
+
+  /* ===== 新品 NEW 标签样式 ===== */
+  #shopify-section-{{ section.id }} .badge-new {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ef4444; /* 鲜艳红色高亮 */
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    z-index: 2;
+    pointer-events: none;
   }
 
   #shopify-section-{{ section.id }} .swiper-slide img,
@@ -107,17 +122,48 @@
     background: #e8ecf1;
   }
 
+  /* ===== 文本与价格内容区 ===== */
+  #shopify-section-{{ section.id }} .slide-content {
+    padding: 10px 8px 12px;
+    background: #ffffff;
+    border-top: 1px solid #edf2f7;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
   #shopify-section-{{ section.id }} .slide-label {
-    padding: 10px 8px;
     font-size: 14px;
     font-weight: 600;
     color: #1e293b;
     letter-spacing: 0.2px;
-    background: #ffffff;
-    border-top: 1px solid #edf2f7;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  /* ===== 价格样式 ===== */
+  #shopify-section-{{ section.id }} .slide-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  #shopify-section-{{ section.id }} .slide-price .price-compare {
+    font-size: 12px;
+    color: #94a3b8;
+    text-decoration: line-through;
+    font-weight: 400;
+  }
+
+  #shopify-section-{{ section.id }} .slide-price .price-sale {
+    color: #dc2626; /* 促销价格颜色 */
   }
 
   /* ===== Navigation Buttons ===== */
@@ -168,34 +214,35 @@
     fill: currentColor;
   }
 
-  /* ===== Bottom Progress Bar ===== */
+  /* ===== Progress Bar ===== */
   #shopify-section-{{ section.id }} .swiper-progress-bar {
-    position: absolute;
-    bottom: 22px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    max-width: 360px;
-    height: 5px;
-    background: rgba(0, 0, 0, 0.08);
-    border-radius: 6px;
-    overflow: hidden;
-    z-index: 5;
+    position: absolute !important;
+    bottom: 25px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 60% !important;
+    max-width: 360px !important;
+    height: 6px !important;
+    background: rgba(0, 0, 0, 0.12) !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    z-index: 20 !important;
+    display: block !important;
   }
 
   #shopify-section-{{ section.id }} .swiper-progress-fill {
-    height: 100%;
+    display: block !important;
+    height: 100% !important;
     width: 0%;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-    border-radius: 6px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6) !important;
+    border-radius: 10px !important;
     will-change: width;
-    transition: width 0.1s linear;
+    transition: width 0.15s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
-  /* ===== Responsive Breakpoints ===== */
   @media (max-width: 768px) {
     #shopify-section-{{ section.id }} .swiper-container-custom {
-      padding: 12px 10px 50px;
+      padding: 12px 10px 55px;
       border-radius: 12px;
     }
     #shopify-section-{{ section.id }} .swiper-button-prev-custom,
@@ -206,13 +253,15 @@
     #shopify-section-{{ section.id }} .swiper-button-prev-custom { left: 4px; }
     #shopify-section-{{ section.id }} .swiper-button-next-custom { right: 4px; }
     #shopify-section-{{ section.id }} .swiper-progress-bar {
-      width: 75%;
-      bottom: 16px;
-      height: 4px;
+      width: 80% !important;
+      bottom: 20px !important;
+      height: 5px !important;
     }
     #shopify-section-{{ section.id }} .slide-label {
       font-size: 12px;
-      padding: 8px 4px;
+    }
+    #shopify-section-{{ section.id }} .slide-price {
+      font-size: 12px;
     }
   }
 {%- endstyle -%}
@@ -231,11 +280,20 @@
               assign item_image = nil
               assign item_title = ''
               assign item_url = '#'
+              assign is_new = false
 
               if mode == 'products' and item_product != blank
                 assign item_image = item_product.featured_image
                 assign item_title = item_product.title
                 assign item_url = item_product.url
+                assign now_seconds = 'now' | date: '%s' | plus: 0
+                assign created_seconds = item_product.created_at | date: '%s' | plus: 0
+                assign diff_days = now_seconds | minus: created_seconds | divided_by: 86400
+
+                if item_product.tags contains 'new' or item_product.tags contains 'New' or diff_days <= 30
+                  assign is_new = true
+                endif
+
               elsif mode == 'collections' and item_collection != blank
                 assign item_image = item_collection.featured_image | default: item_collection.products.first.featured_image
                 assign item_title = item_collection.title
@@ -248,17 +306,31 @@
             -%}
 
             <div class="swiper-slide" {{ block.shopify_attributes }}>
+              <!-- NEW 标签展示 -->
+              {%- if is_new -%}
+                <span class="badge-new">NEW</span>
+              {%- endif -%}
+
               <a href="{{ item_url }}" class="swiper-slide-link">
                 {%- if item_image != blank -%}
-                  {{
-                    item_image
-                    | image_url: width: 600
-                    | image_tag:
-                      loading: 'lazy',
-                      sizes: '(min-width: 1200px) 240px, (min-width: 750px) 33vw, 50vw',
-                      widths: '200, 300, 400, 600',
-                      alt: item_title | escape
-                  }}
+                  <img
+                    srcset="
+                      {%- if item_image.width >= 165 -%}{{ item_image | image_url: width: 165 }} 165w,{%- endif -%}
+                      {%- if item_image.width >= 360 -%}{{ item_image | image_url: width: 360 }} 360w,{%- endif -%}
+                      {%- if item_image.width >= 533 -%}{{ item_image | image_url: width: 533 }} 533w,{%- endif -%}
+                      {%- if item_image.width >= 720 -%}{{ item_image | image_url: width: 720 }} 720w,{%- endif -%}
+                      {%- if item_image.width >= 940 -%}{{ item_image | image_url: width: 940 }} 940w,{%- endif -%}
+                      {%- if item_image.width >= 1066 -%}{{ item_image | image_url: width: 1066 }} 1066w,{%- endif -%}
+                      {{ item_image | image_url }} {{ item_image.width }}w
+                    "
+                    src="{{ item_image | image_url: width: 533 }}"
+                    sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+                    alt="{{ item_image.alt | escape }}"
+                    class="motion-reduce"
+                    loading="lazy"
+                    width="{{ item_image.width }}"
+                    height="{{ item_image.height }}"
+                  >
                 {%- else -%}
                   {%- if mode == 'products' -%}
                     {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
@@ -267,25 +339,42 @@
                   {%- endif -%}
                 {%- endif -%}
 
-                {%- if item_title != blank -%}
-                  <div class="slide-label">{{ item_title | escape }}</div>
-                {%- elsif item_image == blank -%}
-                  <div class="slide-label">
-                    {%- if mode == 'products' -%}
-                      Sample Product
-                    {%- else -%}
-                      Sample Collection
-                    {%- endif -%}
-                  </div>
-                {%- endif -%}
+                <div class="slide-content">
+                  {%- if item_title != blank -%}
+                    <div class="slide-label">{{ item_title | escape }}</div>
+                  {%- elsif item_image == blank -%}
+                    <div class="slide-label">
+                      {%- if mode == 'products' -%}Sample Product{%- else -%}Sample Collection{%- endif -%}
+                    </div>
+                  {%- endif -%}
+
+                  <!-- 价格展示 (仅在 Product 模式下显示) -->
+                  {%- if mode == 'products' -%}
+                    <div class="slide-price">
+                      {%- if item_product != blank -%}
+                        {%- if item_product.compare_at_price > item_product.price -%}
+                          <span class="price-sale">{{ item_product.price | money }}</span>
+                          <span class="price-compare">{{ item_product.compare_at_price | money }}</span>
+                        {%- else -%}
+                          <span>{{ item_product.price | money }}</span>
+                        {%- endif -%}
+                      {%- else -%}
+                        <span>$99.00</span>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                </div>
               </a>
             </div>
           {%- endfor -%}
         {%- else -%}
-          {%- comment -%} Default Placeholder Slides {%- endcomment -%}
+          {%- comment -%} 预设 Demo 数据 (包含价格与部分 NEW 标识) {%- endcomment -%}
           {%- assign default_names = "DOVEDALE,ASTON,SUPER LINTON,LINTON,SUPER DENTON,HERITAGE,ELYSIAN,EVOKE" | split: "," -%}
           {%- for name in default_names -%}
             <div class="swiper-slide">
+              {%- if forloop.index == 1 or forloop.index == 3 -%}
+                <span class="badge-new">NEW</span>
+              {%- endif -%}
               <a href="#" class="swiper-slide-link">
                 <img 
                   src="https://picsum.photos/seed/{{ name | handle }}/400/300" 
@@ -294,7 +383,10 @@
                   width="400" 
                   height="300"
                 >
-                <div class="slide-label">{{ name }}</div>
+                <div class="slide-content">
+                  <div class="slide-label">{{ name }}</div>
+                  <div class="slide-price">$129.00</div>
+                </div>
               </a>
             </div>
           {%- endfor -%}
@@ -329,19 +421,27 @@
       function updateProgressBar(swiper) {
         if (!progressFill) return;
 
-        if (swiper.isLocked) {
+        const totalSlides = swiper.slides ? swiper.slides.length : 0;
+        if (totalSlides === 0) return;
+
+        if (swiper.isLocked || swiper.params.slidesPerView >= totalSlides) {
           progressFill.style.width = '100%';
           return;
         }
 
-        const currentProgress = Math.min(Math.max(swiper.progress, 0), 1);
-        const totalSlides = swiper.slides.length;
-        const visibleSlides = typeof swiper.params.slidesPerView === 'number' ? swiper.params.slidesPerView : 1;
-        
-        const basePercentage = (visibleSlides / totalSlides) * 100;
-        const calculatedWidth = basePercentage + (currentProgress * (100 - basePercentage));
+        let visibleSlides = typeof swiper.params.slidesPerView === 'number' 
+          ? swiper.params.slidesPerView 
+          : 1;
 
-        progressFill.style.width = Math.min(100, Math.max(0, calculatedWidth)) + '%';
+        visibleSlides = Math.min(visibleSlides, totalSlides);
+
+        const basePercentage = (visibleSlides / totalSlides) * 100;
+        const remainingPercentage = 100 - basePercentage;
+        const currentProgress = Math.min(Math.max(swiper.progress, 0), 1);
+
+        const finalWidth = basePercentage + (currentProgress * remainingPercentage);
+
+        progressFill.style.width = Math.min(100, Math.max(0, finalWidth)) + '%';
       }
 
       if (sectionContainer.swiperInstance) {
