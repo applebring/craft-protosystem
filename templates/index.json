@@ -134,7 +134,7 @@
       "type": "featured-collection",
       "name": "t:sections.featured-collection.presets.name",
       "settings": {
-        "collection": "",
+        "collection": "elysian-r",
         "products_to_show": 4,
         "title": "Featured collection",
         "heading_size": "h1",
