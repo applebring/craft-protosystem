@@ -1,0 +1,168 @@
+{%- comment -%} image {%- endcomment -%}
+{%- capture image_product -%}
+  {%- assign image = product.selected_or_first_available_variant.featured_image | default: product.featured_image -%}
+  <a class="product-card__image js image-content__image-wrapper {{ settings.size_image_grid }}" href="{{ product.url | within: collection }}" style="max-width:800px;padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100 }}%;" data-image-id="{{ image.id }}">
+      <img
+        style="width:100px;height:100px"
+                srcset="
+                  {% if image.width >= 350 %}{{ image | image_url: width: 350 }} 350w,{% endif %}
+                  {% if image.width >= 750 %}{{ image | image_url: width: 750 }} 750w,{% endif %}
+                  {% if image.width >= 1100 %}{{ image | image_url: width: 1100 }} 1100w,{% endif %}
+                  {% if image.width >= 1500 %}{{ image | image_url: width: 1500 }} 1500w,{% endif %}
+                  {% if image.width >= 2200 %}{{ image | image_url: width: 2200 }} 2200w,{% endif %}
+                  {% if image.width >= 3000 %}{{ image | image_url: width: 3000 }} 3000w,{% endif %}
+                  {{ image | image_url }} {{ image.width }}w
+                "
+                sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 }}px, (min-width: 750px) calc(100vw - 10rem), 100vw"
+                src="{{ image | image_url: width: 1100 }}"
+                loading="eager"
+                fetchpriority="high"
+                width="{{ image.width }}"
+                height="{{ image.height }}"
+                alt="{{ image.alt | escape }}"
+              />
+        {% render 'second-image' , product: product %}
+  </a>
+{%- endcapture -%}
+
+{%- comment -%} vendor {%- endcomment -%}
+{% capture vendor %}
+ {%- if settings.enable_type and product.vendor != blank -%}
+      <a class="mb-1 product-card__type d-inline-block" href="/collections/vendors?filter.p.vendor={{ product.vendor }}&q={{ product.vendor }}">{{ product.vendor }}</a>
+      {%- endif -%}
+{% endcapture %}
+
+{%- comment -%} price {%- endcomment -%}
+{% capture review %}
+  {%- if settings.enable_review -%}
+  {% comment %} <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span> {% endcomment %}
+    <div style='{{ jm_style }}' class='jdgm-widget jdgm-preview-badge  py-1 small'  data-id='{{ product.id }}' data-auto-install="false" >
+      {{ product.metafields.judgeme.badge }}
+    </div>  
+  {%- endif -%}
+{% endcapture %}
+{%- comment -%} banner {%- endcomment -%}
+
+{%- liquid
+  assign item = settings.productgrid | default: 'product-1'
+  if enable_edit_item
+    assign item = select_item
+  else
+    assign item = settings.productgrid
+  endif
+-%}
+
+{% assign metaBanner = product.metafields.theme.banner.value %}
+{%- assign widths = '198, 432, 642, 900, 1284, 1800' -%}
+
+{%- capture sizes -%}
+(min-width: {{ settings.container }}px) {{ settings.container | minus: 100 | divided_by: 1.6667 }}px,
+(min-width: 750px) calc((100vw - 130px) / 1.667), calc((100vw - 50px) / 1.667)
+{%- endcapture -%}
+{%- capture banner -%}
+  {%- if metaBanner != blank -%}
+    {%- assign imageBanner = metaBanner.image -%}
+    {%- assign image = product.selected_or_first_available_variant.featured_image | default: product.featured_image -%}
+    <div class="product-card__banner_wr h-100 ">
+      <div class="position-relative product-card__image-wr">
+      <div class="product-card__image js product-card__banner image-content__image-wrapper {{ settings.size_image_grid }}" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100 }}%;">
+        {{
+          imageBanner
+          | image_url: width: 1500
+          | image_tag: sizes: sizes, widths: widths, fetchpriority: 'auto', class: ' lazyload'
+        }}
+        <a href="{{ product.url | within: collection }}" class="banner_wrap position-absolute text-left h-100 d-block">
+          {%- if product.vendor != blank -%}
+          <span class="d-inline-block mb-2 text-white subtop"> {{ product.vendor }}</span>
+          {%- endif -%}
+          <h4 class="mb-2 text-white">{{ metaBanner.title }}</h4>
+          <span class="btn btn-underline btn-underline-white">{{ metaBanner.button }}</span>
+        </a>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- case item -%}
+  {%- when 'product-1' -%}
+    {%- comment -%} product-grid-1.liquid {%- endcomment -%}
+    <div class="product-card js-product-card product-card--style1" data-price="{{ product.price }}">
+      <div class="product-card__image-wr">
+        {{ image_product }}
+        {%- render 'product-label', product: product, showlabel: true -%}
+        <div class="product-card__overlay d-flex justify-content-center flex-column">
+          {%- if settings.enable_wishlsit -%}
+            <span
+              data-toggle="tooltip"
+              data-placement="left"
+              data-tooltipalltimes="true"
+              class="btn btn-theme gradient-theme-vertical product-card__overlay-btn js-btn-wishlist"
+              title="{{ 'products.product.wishlist_text' | t }}"
+              data-handle="{{ product.handle }}"
+            >
+              {%- render 'icon-heart' -%}
+            </span>
+          {%- endif -%}
+          {%- if settings.qv_box -%}
+            <span
+              data-tooltip="true"
+              data-placement="left"
+              class="btn btn-theme gradient-theme-vertical product-card__overlay-btn js-btn-quickview"
+              title="{{ 'products.product.quickview_text' | t }}"
+              data-toggle="modal"
+              data-target="#jsQuickview"
+              data-handle="{{ product.handle }}"
+              data-pavailable="{% if product.available %}true{% else %}false{% endif %}"
+              {% if settings.enable_review %}
+                data-viewjdmg="{{ product.metafields.judgeme.badge }}"
+              {% endif %}
+            >
+              {%- render 'icon-view' -%}
+              <span>{{ 'products.product.quickview_text' | t }}</span>
+              {%- if product.metafields.info.shortdesc != blank -%}
+                <span class=" txt-short hide">
+                  {{ product.metafields.info.shortdesc | strip_html | truncatewords: 12 }}
+                </span>
+              {%- else -%}
+                <span class=" txt-short hide">
+                  {{ product.description | strip_html | truncatewords: 12 }}
+                </span>
+              {%- endif -%}
+            </span>
+          {%- endif -%}
+          {%- if settings.enable_compare -%}
+            <span
+              data-tooltip="true"
+              data-placement="left"
+              class="btn btn-theme gradient-theme-vertical product-card__overlay-btn js-btn-compare"
+              title="{{ 'products.product.compare_text' | t }}"
+              data-handle="{{ product.handle }}"
+            >
+              {%- render 'icon-exchange' -%}
+              {%- render 'icon-close-solid' -%}
+              <span>{{ 'products.product.compare_text' | t }}</span>
+            </span>
+          {%- endif -%}
+        </div>
+        {%- liquid
+          if settings.enable_countdown_card
+            render 'product-countdown', product: product
+          endif
+          render 'swatch-grid-1', product: product
+        -%}
+      </div>
+      <div class="product-card__info">
+        <a
+          href="{{ product.url | within: collection }}"
+          title="{{ product.title }}"
+          class=" d-block product-card__name {% if settings.t_product %} text-uppercase {% endif %}"
+        >
+          {{- product.title -}}
+        </a>
+        {{ review }}
+      </div>
+    </div>
+    </div>
+    </div>
+{%- endcase -%}

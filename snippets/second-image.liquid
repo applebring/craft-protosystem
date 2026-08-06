@@ -1,0 +1,25 @@
+{%- if settings.second_image -%}
+{% if product.images.size > 1 %} 
+{%- assign image = product.images[1] -%}
+{%- assign img_url = image | image_url: width: 1 | replace: 'width=1', 'width={width}' -%}
+     <img
+          srcset="
+            {%- if image.width >= 375 -%}{{ image | image_url: width: 375 }} 375w,{%- endif -%}
+            {%- if image.width >= 750 -%}{{ image | image_url: width: 750 }} 750w,{%- endif -%}
+            {%- if image.width >= 1100 -%}{{ image | image_url: width: 1100 }} 1100w,{%- endif -%}
+            {%- if image.width >= 1500 -%}{{ image | image_url: width: 1500 }} 1500w,{%- endif -%}
+            {%- if image.width >= 1780 -%}{{ image | image_url: width: 1780 }} 1780w,{%- endif -%}
+            {%- if image.width >= 2000 -%}{{ image | image_url: width: 2000 }} 2000w,{%- endif -%}
+            {%- if image.width >= 3000 -%}{{ image | image_url: width: 3000 }} 3000w,{%- endif -%}
+            {%- if image.width >= 3840 -%}{{ image | image_url: width: 3840 }} 3840w,{%- endif -%}
+            {{ image | image_url }} {{ image.width }}w
+          "
+          sizes="100vw"
+          src="{{ image | image_url: width: 1500 }}"
+          loading="lazy"
+          alt="{{ image.alt | escape }}"
+          width="{{ image.width }}"
+          height="{{ image.width | divided_by: image.aspect_ratio }}"
+        />
+    {%- endif -%}
+{%- endif -%}

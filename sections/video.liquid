@@ -145,8 +145,13 @@
 </div>
 
 <script>
-    var promise = document.querySelector('video').play();
-  console.log('xxx',promise)
+var video = document.querySelector('video');
+
+if (video) {
+    var promise = video.play();
+    
+    console.log('xxx', promise);
+    
     if (promise !== undefined) {
         promise.catch(error => {
             // Auto-play was prevented
@@ -155,6 +160,7 @@
             // Auto-play started
         });
     }
+}
 </script>
 {% schema %}
 {

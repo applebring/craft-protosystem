@@ -159,6 +159,97 @@
         "padding_bottom": 36
       }
     },
+    "goods-swiper-slider": {
+      "type": "goods-swiper-slider",
+      "settings": {
+        "max_width": 1200,
+        "bg_color": "#f7f9fc",
+        "padding_top": 36,
+        "padding_bottom": 36
+      },
+      "blocks": {
+        "slide_1": {
+          "type": "slide",
+          "settings": {
+            "title": "DOVEDALE"
+          }
+        },
+        "slide_2": {
+          "type": "slide",
+          "settings": {
+            "title": "ASTON"
+          }
+        },
+        "slide_3": {
+          "type": "slide",
+          "settings": {
+            "title": "SUPER LINTON"
+          }
+        },
+        "slide_4": {
+          "type": "slide",
+          "settings": {
+            "title": "LINTON"
+          }
+        },
+        "slide_5": {
+          "type": "slide",
+          "settings": {
+            "title": "SUPER DENTON"
+          }
+        }
+      },
+      "block_order": [
+        "slide_1",
+        "slide_2",
+        "slide_3",
+        "slide_4",
+        "slide_5"
+      ]
+    },
+    // "product-list-swiper": {
+    //   "type": "product-list-swiper",
+    //   "settings": {
+    //     "animation": "fade-up",
+    //     "setwidth": "container",
+    //     "e_size": "cover",
+    //     "e_repeat": "no-repeat",
+    //     "e_position": "center center",
+    //     "bgsection": "#e9e9e9",
+    //     "title_color": "#000000",
+    //     "title_top": "",
+    //     "title": "Heritage Series",
+    //     "des": "No loudspeaker manufacturer can claim a richer heritage than Wharfedale.",
+    //     "align-heading": "left",
+    //     "collection": "elysian-r",
+    //     "limit": 10,
+    //     "perviewDesktop": 5,
+    //     "spaceBetween": 30,
+    //     "nowrap": true,
+    //     "arrows": true,
+    //     "scrollbar": true,
+    //     "buttonall": "",
+    //     "buttonall_link": "#",
+    //     "style_btn": "btn-theme",
+    //     "enable_first_banner": false,
+    //     "width_banner": 25,
+    //     "subtitle_banner": "Sub Title",
+    //     "title_banner": "30% Off",
+    //     "size_text": "h3",
+    //     "des_banner": "Protection from the",
+    //     "pos_banner": "mid-center",
+    //     "button_banner": "discover now",
+    //     "link_banner": "#",
+    //     "style_btn_banner": "btn-underline btn-underline-white",
+    //     "text_banner_color": "#ffffff",
+    //     "overlay_banner": "#000000",
+    //     "opacity_banner": 0.2,
+    //     "paddingsection": "80px 0px 80px 0px",
+    //     "paddingmobile": "40px 0px 40px 0px",
+    //     "marginsection": "0px 0px 0px 0px",
+    //     "marginmobile": "0px 0px 0px 0px"
+    //   }
+    // },
     "multicolumn_idxxHY": {
       "type": "multicolumn",
       "blocks": {
@@ -265,6 +356,7 @@
     "rich_text",
     "collage-0",
     "featured_collection_aE3rWy",
+    "goods-swiper-slider",
     "multicolumn_idxxHY",
     "video_jmLegg",
     "featured-collection"

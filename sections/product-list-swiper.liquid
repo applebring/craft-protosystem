@@ -1,0 +1,851 @@
+<!-- product-list-swiper.liquid -->
+{%- liquid
+  assign buttonall = section.settings.buttonall
+  assign buttonall_link = section.settings.buttonall_link
+  assign style_btn = section.settings.style_btn
+  assign text_color = section.settings.title_color
+
+  assign text_banner_color = section.settings.text_banner_color
+  assign pos_banner = section.settings.pos_banner
+  assign image_banner = section.settings.image_banner
+  assign overlay_banner = section.settings.overlay_banner
+  assign opacity_banner = section.settings.opacity_banner
+  assign subtitle_banner = section.settings.subtitle_banner
+  assign title_banner = section.settings.title_banner
+  assign size_text = section.settings.size_text
+  assign link_banner = section.settings.link_banner
+  assign des_banner = section.settings.des_banner
+  assign button_banner = section.settings.button_banner
+  assign style_btn_banner = section.settings.style_btn_banner
+  assign enable_first_banner = section.settings.enable_first_banner
+  assign width_banner = section.settings.width_banner
+
+  case pos_banner
+    when 'top-left'
+      assign positiontxt = 'align-items-start justify-content-start'
+    when 'top-center'
+      assign positiontxt = 'align-items-start justify-content-center text-center'
+    when 'top-right'
+      assign positiontxt = 'align-items-start justify-content-end text-right'
+    when 'mid-left'
+      assign positiontxt = 'align-items-center justify-content-start'
+    when 'mid-center'
+      assign positiontxt = 'align-items-center justify-content-center text-center'
+    when 'mid-right'
+      assign positiontxt = 'align-items-center justify-content-end text-right'
+    when 'bot-left'
+      assign positiontxt = 'align-items-end justify-content-start'
+    when 'bot-center'
+      assign positiontxt = 'align-items-end justify-content-center text-center'
+    when 'bot-right'
+      assign positiontxt = 'align-items-end justify-content-end text-right'
+    else
+      assign positiontxt = 'align-items-end justify-content-start'
+  endcase
+-%}
+<style>
+  .customstyle{{ section.id }}{
+    background-position: {{ section.settings.e_position }} !important;
+    background-repeat: {{ section.settings.e_repeat }} !important;
+    background-size: {{ section.settings.e_size }} !important;
+    --or-width-banner : {{ width_banner }}%;
+    {% if text_color != 'transparent' and text_color != 'rgba(0,0,0,0)' %}
+      --g-font-color-subtop: {{ text_color }};
+      --g-color-heading :  {{ text_color }};
+      --g-color-heading-rgb:{{ text_color.red }}, {{ text_color.green }}, {{ text_color.blue }};
+      --color-body-text : {{ text_color }};
+      --color-body-text-rgb: {{ text_color.red }}, {{ text_color.green }},  {{ text_color.blue }} ;
+      --g-main-2: {{ text_color }};
+    {% endif %}
+  }
+    {%- if section.settings.nowrap -%}
+    .productswiper .swiper-container {
+        overflow: visible;
+    }
+    {%- endif -%}
+    .productlist-swiper .product-card, .productlist-swiper .product-card .product-card__info{
+        margin-bottom: 0;
+    }
+    .productlist-swiper .product-card__image-wr{
+      --g-color-heading : {{ settings.color_body_headings }};
+      --g-color-heading-rgb:{{ settings.color_body_headings.red }}, {{ settings.color_body_headings.green }}, {{ settings.color_body_headings.blue }};
+    }
+    .productlist-swiper .image-content__image{
+      height:100%;
+      object-fit:cover;
+    }
+    .productlist-banner {
+      width:var(--or-width-banner) !important;
+    }
+    .product-image__banner{
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      z-index:1;
+      padding:32px;
+      background:rgba(var(--bg-overlay-rgba),var(--bg-opacity));
+    }
+    @media (max-width:749px){
+      .productswiper .swiper-container {
+          overflow: visible;
+      }
+      .productswiper .container-p .swiper-slide{
+        width: {% if enable_first_banner %}74% {% else %} 42% {% endif %} !important;
+        margin-right:20px !important;
+      }
+      .productswiper .container-p .productlist-banner {
+        width:75% !important;
+      }
+    }
+    @media (min-width:750px){
+      .productlist-wrapper .swiper-button-prev{
+        left: -58px;
+      }
+      .productlist-wrapper .swiper-button-next{
+        right: -58px;
+      }
+    }
+</style>
+{% stylesheet %}
+  .productlist-wrapper{
+    overflow: hidden;
+  }
+{% endstylesheet %}
+{%- assign image_banner_bg = section.settings.image_bg -%}
+<div
+  class="customstyle{{ section.id }} productswiper lazyload"
+  data-aos="{{ section.settings.animation }}"
+  data-bgset="{% render 'bgset', image: image_banner_bg %}"
+  data-sizes="auto"
+  data-parent-fit="cover"
+>
+  {%- render 'style-section' -%}
+  <div>
+    <div class="section-block">
+      <div class="{{ section.settings.setwidth }}">
+        {%- render 'section-heading' -%}
+      </div>
+      <div class="{{ section.settings.setwidth }} container-p">
+        <div class="productlist-wrapper dots-negative swiper-wrapper-{{ section.id }} position-relative">
+          <div
+            class="productlist-swiper swiper-container swipercol-{{ section.id }} {% if section.settings.scrollbar %} pb-5 {% endif %}"
+            id="Productlist-{{ section.id }}"
+            data-section-id="{{ section.id }}"
+            data-section-type="swipercustom"
+            data-perview-desktop="{{ section.settings.perviewDesktop }}"
+            data-space-between="{{ section.settings.spaceBetween }}"
+            data-perview-mobile="{% if enable_first_banner %} 1.32 {% else %} 2.2 {% endif %}"
+          >
+            <div class="swiper-wrapper">
+              {%- assign collection = collections[section.settings.collection] -%}
+              {%- assign limit = section.settings.limit -%}
+              {%- if enable_first_banner -%}
+                <div class="productlist-banner swiper-slide h-100">
+                  <div class="image-content__image-container h-100 overflow-hidden">
+                    {%- if image_banner != blank -%}
+                      <div class="image-content__image-wrapper h-100">
+                        {% assign img_url = image_banner | image_url: width: 1 | replace: 'width=1', 'width={width}' %}
+                        <img
+                          class="image-content__image lazyload scale-in"
+                          src="{{ image_banner | image_url: width: 720 }}"
+                          data-src="{{ img_url }}"
+                          data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048]"
+                          data-aspectratio="{{ image_banner.aspect_ratio }}"
+                          data-sizes="auto"
+                          alt="{{ image_banner.alt | escape }}"
+                          loading="lazy"
+                          width="{{ image_banner.width }}"
+                          height="{{ image_banner.height }}"
+                        >
+                      </div>
+                    {%- else -%}
+                      <div class="image-content__image h-100 ">
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {%- endif -%}
+                    <div
+                      class="product-image__banner position-absolute d-flex {{ positiontxt }}"
+                      style="
+                            --bg-overlay-rgba: {{ overlay_banner.red }}, {{ overlay_banner.green }}, {{ overlay_banner.blue }};
+                            --bg-opacity: {{ opacity_banner }};
+                            {%- if text_banner_color != 'transparent' -%}
+                            --g-font-color-subtop: {{ text_banner_color }};
+                            --g-color-heading :  {{ text_banner_color }};
+                            --color-body-text : {{ text_banner_color }};
+                            --color-body-text-rgb: {{ text_banner_color.red }}, {{ text_banner_color.green }},  {{ text_banner_color.blue }} ;
+                        {%- endif -%}
+                      "
+                    >
+                      <div class="product-image__banner_in">
+                        {%- if subtitle_banner != blank -%}
+                          <div class="subtop mb-3">{{ subtitle_banner }}</div>
+                        {%- endif -%}
+                        {%- if title_banner != blank -%}
+                          <h3 class="mb-2 {{ size_text }}">
+                            <a href="{{ link_banner }}">{{ title_banner }}</a>
+                          </h3>
+                        {%- endif -%}
+                        {%- if des_banner != blank -%}
+                          <div class="rte mb-3 txt-body">
+                            {{ des_banner }}
+                          </div>
+                        {%- endif -%}
+                        {%- if button_banner != blank and link_banner != blank -%}
+                          <div class="pt-3">
+                            <a href="{{ link_banner }}" class="btn {{ style_btn_banner }}">
+                              {{ button_banner | escape }}
+                            </a>
+                          </div>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+              {%- if collection != blank -%}
+                {%- for product in collection.products limit: limit -%}
+                  <div class="productlist-item swiper-slide">
+                    <div data-aos="{{ section.settings.animation }}" data-aos-delay="{{ forloop.index | times: 100 }}">
+                      {%- render 'product-card', product: product -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              {%- else -%}
+                {%- for i in (1..limit) -%}
+                  <div class="productlist-item swiper-slide">
+                    <div data-aos="{{ section.settings.animation }}" data-aos-delay="{{ forloop.index | times: 100 }}">
+                      {%- render 'product-grid-blank' -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              {%- endif -%}
+            </div>
+
+            {%- if section.settings.scrollbar -%}
+              <div class="swiper-scrollbar"></div>
+            {%- endif -%}
+          </div>
+          {%- if section.settings.arrows -%}
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+          {%- endif -%}
+        </div>
+        {%- if buttonall != blank -%}
+          <div class="pt-4 text-center">
+            <a href="{{ buttonall_link }}" class="btn {{ style_btn }}">
+              {{ buttonall }}
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+
+{
+  "name": "Product list Swiper",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "animation",
+      "options": [
+        {
+          "value": "",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        },
+        {
+          "value": "fade-up",
+          "label": "Fade Up"
+        },
+        {
+          "value": "fade-down",
+          "label": "Fade Down"
+        },
+        {
+          "value": "fade-left",
+          "label": "Fade Left"
+        },
+        {
+          "value": "fade-right",
+          "label": "Fade Right"
+        },
+        {
+          "value": "fade-up-right",
+          "label": "Fade Up Right"
+        },
+        {
+          "value": "fade-up-left",
+          "label": "Fade Up Left"
+        },
+        {
+          "value": "fade-down-right",
+          "label": "Fade Down Right"
+        },
+        {
+          "value": "fade-down-left",
+          "label": "Fade Down Left"
+        },
+        {
+          "value": "flip-up",
+          "label": "Flip Up"
+        },
+        {
+          "value": "flip-down",
+          "label": "Flip Down"
+        },
+        {
+          "value": "flip-left",
+          "label": "Flip Left"
+        },
+        {
+          "value": "flip-right",
+          "label": "Flip Right"
+        },
+        {
+          "value": "slide-up",
+          "label": "Slide Up"
+        },
+        {
+          "value": "slide-down",
+          "label": "Slide Down"
+        },
+        {
+          "value": "slide-left",
+          "label": "Slide Left"
+        },
+        {
+          "value": "slide-right",
+          "label": "Slide Right"
+        },
+        {
+          "value": "zoom-in",
+          "label": "Zoom In"
+        },
+        {
+          "value": "zoom-in-up",
+          "label": "Zoom In Up"
+        },
+        {
+          "value": "zoom-in-down",
+          "label": "Zoom In Down"
+        },
+        {
+          "value": "zoom-in-left",
+          "label": "Zoom In Left"
+        },
+        {
+          "value": "zoom-in-right",
+          "label": "Zoom In Right"
+        },
+        {
+          "value": "zoom-out",
+          "label": "Zoom Out"
+        },
+        {
+          "value": "zoom-out-up",
+          "label": "Zoom Out Up"
+        },
+        {
+          "value": "zoom-out-down",
+          "label": "Zoom Out Down"
+        },
+        {
+          "value": "zoom-out-left",
+          "label": "Zoom Out Feft"
+        },
+        {
+          "value": "zoom-out-right",
+          "label": "Zoom Out Right"
+        }
+      ],
+      "label": "Select Animation"
+    },
+    {
+      "type": "select",
+      "id": "setwidth",
+      "label": "Full Width",
+      "default": "container",
+      "options": [
+        {
+          "value": "container",
+          "label": "Box"
+        },
+        {
+          "value": "container-fluid",
+          "label": "Container Fluid"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image_bg",
+      "label": "Background image"
+    },
+    {
+      "type": "select",
+      "id": "e_size",
+      "label": "Background Size",
+      "default": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "cover",
+          "label": "Cover"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "e_repeat",
+      "label": "Background Repeat",
+      "default": "no-repeat",
+      "options": [
+        {
+          "value": "no-repeat",
+          "label": "No-repeat"
+        },
+        {
+          "value": "repeat",
+          "label": "Repeat"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "e_position",
+      "label": "Background Position",
+      "options": [
+        {
+          "value": "top left",
+          "label": "Top Left"
+        },
+        {
+          "value": "top center",
+          "label": "Top Center"
+        },
+        {
+          "value": "top right",
+          "label": "Top Right"
+        },
+        {
+          "value": "left center",
+          "label": "Left Center"
+        },
+        {
+          "value": "center center",
+          "label": "Center Center"
+        },
+        {
+          "value": "center right",
+          "label": "Center Right"
+        },
+        {
+          "value": "bottom left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "bottom right",
+          "label": "Bottom Right"
+        }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "color",
+      "id": "bgsection",
+      "label": "Background Section",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Text Color",
+      "default": "transparent"
+    },
+    {
+      "type": "text",
+      "id": "title_top",
+      "label": "Sub Title Top",
+      "default": "Sub Title Top"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Product list"
+    },
+    {
+      "type": "textarea",
+      "id": "des",
+      "label": "HTML / Description"
+    },
+    {
+      "type": "select",
+      "id": "align-heading",
+      "label": "Align Heading",
+      "default": "center",
+      "options": [
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "label": "Collection",
+      "id": "collection",
+      "type": "collection"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "min": 3,
+      "max": 30,
+      "step": 1,
+      "label": "Limit items",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "perviewDesktop",
+      "label": "Per View Desktop",
+      "max": 6,
+      "min": 1,
+      "step": 1,
+      "unit": " c",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "spaceBetween",
+      "label": "Space Between",
+      "max": 40,
+      "min": 0,
+      "step": 1,
+      "unit": " sp",
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "nowrap",
+      "label": "Wrap Box",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "arrows",
+      "label": "Arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "scrollbar",
+      "label": "Scroll Bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Button "
+    },
+    {
+      "type": "text",
+      "id": "buttonall",
+      "label": "Button Bottom"
+    },
+    {
+      "type": "url",
+      "id": "buttonall_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "style_btn",
+      "label": "Style Button",
+      "default": "btn-theme",
+      "options": [
+        {
+          "value": "btn-theme",
+          "label": "Button Box"
+        },
+        {
+          "value": "btn-theme btn-white",
+          "label": "Button Box White"
+        },
+        {
+          "value": "btn-underline",
+          "label": "Button Line"
+        },
+        {
+          "value": "btn-underline btn-underline-white",
+          "label": "Button Line White"
+        },
+        {
+          "value": "btn-outline",
+          "label": "Button Outline"
+        },
+        {
+          "value": "btn-outline btn-outline-white",
+          "label": "Button Outline White"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "First Banner"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_first_banner",
+      "label": "Enable Banner",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "image_banner",
+      "label": "Image Banner"
+    },
+    {
+      "type": "range",
+      "id": "width_banner",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "%",
+      "label": "Width Banner",
+      "default": 30
+    },
+    {
+      "type": "text",
+      "id": "subtitle_banner",
+      "label": "Sub Title",
+      "default": "Sub Title"
+    },
+    {
+      "type": "text",
+      "id": "title_banner",
+      "label": "Title Banner",
+      "default": "Title Banner"
+    },
+    {
+      "type": "select",
+      "id": "size_text",
+      "default": "h2",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        }
+      ],
+      "label": "Heading Size"
+    },
+    {
+      "type": "textarea",
+      "id": "des_banner",
+      "label": "Description",
+      "default": "Protection from the"
+    },
+    {
+      "type": "select",
+      "id": "pos_banner",
+      "options": [
+        {
+          "value": "top-left",
+          "label": "Top Left"
+        },
+        {
+          "value": "top-center",
+          "label": "Top Center"
+        },
+        {
+          "value": "top-right",
+          "label": "Top Right"
+        },
+        {
+          "value": "mid-left",
+          "label": "Midle Left "
+        },
+        {
+          "value": "mid-center",
+          "label": "Midle Center "
+        },
+        {
+          "value": "mid-right",
+          "label": "Midle Right "
+        },
+        {
+          "value": "bot-left",
+          "label": "Bottom Left "
+        },
+        {
+          "value": "bot-center",
+          "label": "Bottom Center "
+        },
+        {
+          "value": "bot-right",
+          "label": "Bottom Right "
+        }
+      ],
+      "default": "mid-center",
+      "label": "Text Position"
+    },
+    {
+      "type": "text",
+      "id": "button_banner",
+      "label": "Button text 1",
+      "default": "discover now"
+    },
+    {
+      "type": "url",
+      "id": "link_banner",
+      "label": "Button Link 1"
+    },
+    {
+      "type": "select",
+      "id": "style_btn_banner",
+      "label": "Style Button 1",
+      "default": "btn-underline btn-underline-white",
+      "options": [
+        {
+          "value": "btn-theme",
+          "label": "Button Box"
+        },
+        {
+          "value": "btn-theme btn-white",
+          "label": "Button Box White"
+        },
+        {
+          "value": "btn-underline",
+          "label": "Button Line"
+        },
+        {
+          "value": "btn-underline btn-underline-white",
+          "label": "Button Line White"
+        },
+        {
+          "value": "btn-outline",
+          "label": "Button Outline"
+        },
+        {
+          "value": "btn-outline btn-outline-white",
+          "label": "Button Outline White"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "text_banner_color",
+      "label": "Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_banner",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "opacity_banner",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "unit": "op",
+      "label": "Image overlay opacity",
+      "default": 0.2
+    },
+    {
+      "type": "header",
+      "content": "Section Padding "
+    },
+    {
+      "type": "text",
+      "id": "paddingsection",
+      "label": "Padding Section",
+      "default": "0px 0px 0px 0px",
+      "info": "Padding: Top Right Bottom Left"
+    },
+    {
+      "type": "text",
+      "id": "paddingmobile",
+      "label": "Padding Section Mobile",
+      "default": "40px 0px 40px 0px",
+      "info": "Padding: Top Right Bottom Left"
+    },
+    {
+      "type": "header",
+      "content": "Section Margin "
+    },
+    {
+      "type": "text",
+      "id": "marginsection",
+      "label": "Margin Section",
+      "default": "0px 0px 0px 0px",
+      "info": "Margin: Top Right Bottom Left"
+    },
+    {
+      "type": "text",
+      "id": "marginmobile",
+      "label": "Margin Mobile",
+      "default": "0px 0px 0px 0px",
+      "info": "Margin: Top Right Bottom Left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product list (Swiper)",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}

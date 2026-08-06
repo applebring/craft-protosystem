@@ -1451,5 +1451,421 @@
         "default": "scheme-1"
       }
     ]
-  }
+  },
+    {
+    "name": "Product Card",
+    "settings": [
+      {
+        "type": "select",
+        "id": "productgrid",
+        "label": "Item Hover Style ",
+        "default": "product-7",
+        "options": [
+          {
+            "value": "product-1",
+            "label": "Style - 1"
+          },
+          {
+            "value": "product-2",
+            "label": "Style - 2"
+          },
+          {
+            "value": "product-3",
+            "label": "Style - 3"
+          },
+          {
+            "value": "product-4",
+            "label": "Style - 4"
+          },
+          {
+            "value": "product-5",
+            "label": "Style - 5"
+          },
+          {
+            "value": "product-6",
+            "label": "Style - 6"
+          },
+          {
+            "value": "product-7",
+            "label": "Style - 7"
+          },
+          {
+            "value": "product-8",
+            "label": "Style - 8"
+          },
+          {
+            "value": "product-9",
+            "label": "Style - 9"
+          },
+          {
+            "value": "product-10",
+            "label": "Style - 10"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "size_image_grid",
+        "label": "Size Image Product Grid",
+        "default": "auto",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Natural"
+          },
+          {
+            "value": "square",
+            "label": "Square (1:1)"
+          },
+          {
+            "value": "landscape",
+            "label": "Landscape (4:3)"
+          },
+          {
+            "value": "portrait",
+            "label": "Portrait (2:3)"
+          },
+          {
+            "value": "wide",
+            "label": "Wide (16:9)"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_type",
+        "label": "Enable Vendor Product",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "t_product",
+        "label": "Title Uppercase",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "second_image",
+        "label": "Enable Second Image",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_review",
+        "label": "Enable Review",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "e_swatch",
+        "label": "Enable Swatch",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "swatch_color",
+        "label": "Enable Swatch Color",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "swatch_color_circle",
+        "label": "Circle Swatch Color",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_countdown_card",
+        "label": "Enable Countdown",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "🏷️ Config label"
+      },
+      {
+        "type": "range",
+        "id": "menu_label_size",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "label": "Font size",
+        "unit": " px",
+        "default": 12
+      },
+      {
+        "type": "range",
+        "id": "menu_label_space",
+        "min": 0,
+        "max": 1,
+        "step": 0.1,
+        "label": "Spacing",
+        "unit": " em",
+        "default": 0.1
+      },
+      {
+        "type": "checkbox",
+        "id": "txtuppercase",
+        "default": false,
+        "label": "Enable Text Uppercase"
+      },
+      {
+        "type": "checkbox",
+        "id": "e_rotatelabel",
+        "default": true,
+        "label": "Enable Rotate Label"
+      },
+      {
+        "type": "select",
+        "id": "style_label",
+        "label": "Style Label",
+        "default": "rectangular_label",
+        "options": [
+          {
+            "value": "rectangular_label",
+            "label": "Rectangular"
+          },
+          {
+            "value": "square_label",
+            "label": "Square"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Position Label"
+      },
+      {
+        "type": "range",
+        "id": "top_label",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "label": "Top Label",
+        "unit": " px",
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "left_label",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "label": "Left Label",
+        "unit": " px",
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "radius_label",
+        "min": 0,
+        "max": 40,
+        "step": 1,
+        "label": "Border Radius Label",
+        "unit": " px",
+        "default": 25
+      },
+      {
+        "type": "header",
+        "content": "🏷️ New label"
+      },
+      {
+        "type": "checkbox",
+        "id": "new_label_enable",
+        "default": true,
+        "label": "Enable"
+      },
+      {
+        "type": "text",
+        "id": "new_label_text",
+        "default": "New",
+        "label": "Text"
+      },
+      {
+        "type": "color",
+        "id": "new_label_bg",
+        "default": "#34bf49",
+        "label": "Background"
+      },
+      {
+        "type": "color",
+        "id": "new_label_cl",
+        "default": "#ffffff",
+        "label": "Text"
+      },
+      {
+        "type": "range",
+        "id": "new_label_day",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "label": "Number of days for which the product is considered 'new'",
+        "default": 30
+      },
+      {
+        "type": "header",
+        "content": "🏷️ Sale label"
+      },
+      {
+        "type": "checkbox",
+        "id": "sale_label_enable",
+        "default": true,
+        "label": "Enable"
+      },
+      {
+        "type": "text",
+        "id": "sale_label_text",
+        "default": "On Sale",
+        "label": "Text"
+      },
+      {
+        "type": "select",
+        "id": "tagsale",
+        "label": "Tag Sale Product",
+        "default": "percent",
+        "options": [
+          {
+            "value": "percent",
+            "label": "%"
+          },
+          {
+            "value": "txt",
+            "label": "Text"
+          },
+          {
+            "value": "txtandnumber",
+            "label": "Number and Text"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "sale_label_bg",
+        "default": "#eb7025",
+        "label": "Background"
+      },
+      {
+        "type": "color",
+        "id": "sale_label_cl",
+        "default": "#ffffff",
+        "label": "Text"
+      },
+      {
+        "type": "header",
+        "content": "Sale Label Product Detail"
+      },
+      {
+        "type": "color",
+        "id": "sale_label_bg_product",
+        "default": "#d73f0f",
+        "label": "Background  "
+      },
+      {
+        "type": "color",
+        "id": "sale_label_cl_product",
+        "default": "#ffffff",
+        "label": "Text"
+      },
+      {
+        "type": "header",
+        "content": "🏷️ Custom label 1"
+      },
+      {
+        "type": "checkbox",
+        "id": "label_e1",
+        "default": true,
+        "label": "Enable Custom Tag 1"
+      },
+      {
+        "type": "text",
+        "id": "label_text1",
+        "default": "Tag1",
+        "label": "Text Custom Tag 1"
+      },
+      {
+        "type": "color",
+        "id": "label_bg1",
+        "default": "#eb7025",
+        "label": "Background"
+      },
+      {
+        "type": "color",
+        "id": "label_cl1",
+        "default": "#ffffff",
+        "label": "Text Color"
+      },
+      {
+        "type": "header",
+        "content": "🏷️ Custom label 2"
+      },
+      {
+        "type": "checkbox",
+        "id": "label_e2",
+        "default": true,
+        "label": "Enable Custom Tag 2"
+      },
+      {
+        "type": "text",
+        "id": "label_text2",
+        "default": "Tag1",
+        "label": "Text Custom Tag 2"
+      },
+      {
+        "type": "color",
+        "id": "label_bg2",
+        "default": "#eb7025",
+        "label": "Background"
+      },
+      {
+        "type": "color",
+        "id": "label_cl2",
+        "default": "#ffffff",
+        "label": "Text Color"
+      },
+      {
+        "type": "header",
+        "content": "🏷️ Custom label 3"
+      },
+      {
+        "type": "checkbox",
+        "id": "label_e3",
+        "default": true,
+        "label": "Enable Custom Tag 3"
+      },
+      {
+        "type": "text",
+        "id": "label_text3",
+        "default": "Tag1",
+        "label": "Text Custom Tag 3"
+      },
+      {
+        "type": "color",
+        "id": "label_bg3",
+        "default": "#eb7025",
+        "label": "Background"
+      },
+      {
+        "type": "color",
+        "id": "label_cl3",
+        "default": "#ffffff",
+        "label": "Text Color"
+      },
+      {
+        "type": "header",
+        "content": "=== Sold Out"
+      },
+      {
+        "type": "color",
+        "id": "sold_bg",
+        "default": "#FF9551",
+        "label": "Background Sold Out"
+      },
+      {
+        "type": "color",
+        "id": "sold_cl",
+        "default": "#ffffff",
+        "label": "Text Sold Out"
+      }
+    ]
+  },
 ]

@@ -1,0 +1,20 @@
+{%- style -%}
+    .customstyle{{ section.id }}{
+      background-color:{{ section.settings.bgsection }};
+      padding: {{ section.settings.paddingsection }};
+      margin: {{ section.settings.marginsection }};
+
+    }
+    {%- if section.settings.gutter_padding -%}
+    .customstyle{{ section.id }} .row{
+      --g-gutter:{{ section.settings.gutter_padding }}px;
+      --g-hgutter: {{ section.settings.gutter_padding | divided_by: 2 }}px;
+    }
+  {%- endif -%}
+    @media (max-width:750px){
+      .customstyle{{ section.id }}{
+        padding: {{ section.settings.paddingmobile }};
+        margin: {{ section.settings.marginmobile }}
+      }
+    }
+{%- endstyle -%}

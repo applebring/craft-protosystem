@@ -12,6 +12,11 @@
   "presets": {
     "Craft": {
       "logo_width": 100,
+      "productgrid": "product-1",
+    "size_image_grid": "auto",
+    "t_product": false,
+    "second_image": false,
+    "enable_review": true,
       "color_schemes": {
         "scheme-1": {
           "settings": {
