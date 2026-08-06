@@ -68,46 +68,53 @@
       }
     },
     "featured-category": {
-  "type": "featured-category",
-  "settings": {
-    "section_title": "Popular Collections",
-    "columns_desktop": 3
-  },
-  "blocks": {
-    "category_block_1": {
-      "type": "category",
+      "type": "featured-category",
+      "blocks": {
+        "category_block_1": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/ELEGAN1StandardBlack_I5.jpg",
+            "title": "Accessories Deals",
+            "description": "Up to 50% off on premium accessories",
+            "link": "shopify://collections/accessories"
+          }
+        },
+        "category_block_2": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/ELEGAN1StandardBlack_I5.jpg",
+            "title": "Energy Automation",
+            "description": "Smart devices designed to reduce power consumption",
+            "link": "shopify://collections/automation"
+          }
+        },
+        "category_block_3": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/ELEGAN_1_Standard_Black_I5.jpg",
+            "title": "Home Security",
+            "description": "Protect your home with modern smart locks and cameras",
+            "link": "shopify://collections/security"
+          }
+        }
+      },
+      "block_order": [
+        "category_block_1",
+        "category_block_2",
+        "category_block_3"
+      ],
       "settings": {
-        "image": "shopify:\/\/shop_images\/accessories-deal.jpg",
-        "title": "Accessories Deals",
-        "description": "Up to 50% off on premium accessories",
-        "link": "shopify:\/\/collections\/accessories"
+        "section_title": "Popular Collections",
+        "heading_size": "h1",
+        "columns_desktop": 3,
+        "image_position": "right",
+        "color_scheme": "",
+        "use_custom_bg": false,
+        "background_color": "#f5f5f5",
+        "padding_top": 36,
+        "padding_bottom": 36
       }
     },
-    "category_block_2": {
-      "type": "category",
-      "settings": {
-        "image": "shopify:\/\/shop_images\/energy-automation.jpg",
-        "title": "Energy Automation",
-        "description": "Smart devices designed to reduce power consumption",
-        "link": "shopify:\/\/collections\/automation"
-      }
-    },
-    "category_block_3": {
-      "type": "category",
-      "settings": {
-        "image": "shopify:\/\/shop_images\/home-security.jpg",
-        "title": "Home Security",
-        "description": "Protect your home with modern smart locks and cameras",
-        "link": "shopify:\/\/collections\/security"
-      }
-    }
-  },
-  "block_order": [
-    "category_block_1",
-    "category_block_2",
-    "category_block_3"
-  ]
-},
     "rich_text": {
       "type": "rich-text",
       "blocks": {
@@ -198,6 +205,49 @@
         "swipe_on_mobile": false,
         "padding_top": 36,
         "padding_bottom": 36
+      }
+    },
+    "rich_text_Mfjztd": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_8JHfkA": {
+          "type": "heading",
+          "settings": {
+            "heading": "Talk about your brand",
+            "heading_size": "h1"
+          }
+        },
+        "text_dnngNJ": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.</p>"
+          }
+        },
+        "button_LMcmVd": {
+          "type": "button",
+          "settings": {
+            "button_label": "Button label",
+            "button_link": "",
+            "button_style_secondary": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_8JHfkA",
+        "text_dnngNJ",
+        "button_LMcmVd"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 40,
+        "padding_bottom": 52
       }
     },
     "goods-swiper-slider": {
@@ -375,49 +425,6 @@
         "swipe_on_mobile": false,
         "padding_top": 0,
         "padding_bottom": 68
-      }
-    },
-    "rich_text_Mfjztd": {
-      "type": "rich-text",
-      "blocks": {
-        "heading_8JHfkA": {
-          "type": "heading",
-          "settings": {
-            "heading": "Talk about your brand",
-            "heading_size": "h1"
-          }
-        },
-        "text_dnngNJ": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.</p>"
-          }
-        },
-        "button_LMcmVd": {
-          "type": "button",
-          "settings": {
-            "button_label": "Button label",
-            "button_link": "",
-            "button_style_secondary": false,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
-          }
-        }
-      },
-      "block_order": [
-        "heading_8JHfkA",
-        "text_dnngNJ",
-        "button_LMcmVd"
-      ],
-      "name": "t:sections.rich-text.presets.name",
-      "settings": {
-        "desktop_content_position": "center",
-        "content_alignment": "center",
-        "color_scheme": "",
-        "full_width": true,
-        "padding_top": 40,
-        "padding_bottom": 52
       }
     }
   },
