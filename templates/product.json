@@ -23,6 +23,10 @@
           "type": "title",
           "settings": {}
         },
+        "rating_BURmhh": {
+          "type": "rating",
+          "settings": {}
+        },
         "price": {
           "type": "price",
           "settings": {}
@@ -59,6 +63,7 @@
       "block_order": [
         "text",
         "title",
+        "rating_BURmhh",
         "price",
         "variant_picker",
         "quantity_selector",
