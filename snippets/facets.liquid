@@ -902,7 +902,7 @@
     </facet-remove>
   </div>
   {% comment %} Sort, product count and filter pills at the end when filter is type of Drawer for the correct tabbing order {% endcomment %}
-  {%- if enable_sorting and filter_type == 'drawer' -%}
+{%- if enable_sorting and filter_type == 'drawer' -%}
     <facet-filters-form class="facets small-hide">
       <form id="FacetSortDrawerForm" class="facets__form">
         <div class="facet-filters sorting caption small-hide">
@@ -947,6 +947,7 @@
       </form>
     </facet-filters-form>
   {%- endif -%}
+
   <div
     class="product-count light{% if filter_type == 'vertical' or filter_type == 'horizontal' %} medium-hide large-up-hide{% endif %}"
     role="status"
@@ -971,6 +972,7 @@
     </h2>
     {%- render 'loading-spinner' -%}
   </div>
+
   {%- if filter_type == 'drawer' -%}
     <facet-filters-form class="facets facets-pill small-hide">
       <form id="FacetFiltersPillsForm" class="facets__form">

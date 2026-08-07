@@ -34,6 +34,14 @@
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
+
+  /* 支持 6 列的布局 CSS */
+  @media screen and (min-width: 990px) {
+    .grid--6-col-desktop .grid__item {
+      width: calc(16.66% - var(--grid-desktop-horizontal-spacing) * 5 / 6);
+      max-width: calc(16.66% - var(--grid-desktop-horizontal-spacing) * 5 / 6);
+    }
+  }
 {%- endstyle -%}
 
 <collection-component
@@ -151,7 +159,7 @@
                 id="product-grid"
                 data-id="{{ section.id }}"
                 class="
-                  grid product-grid grid--{{ section.settings.columns_mobile }}-col-tablet-down
+                  grid product-grid js-product-grid grid--{{ section.settings.columns_mobile }}-col-tablet-down
                   grid--{{ section.settings.columns_desktop }}-col-desktop
                   {% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %}
                 "
@@ -200,6 +208,56 @@
     {%- endif -%}
   </div>
 </collection-component>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    function initGridLayoutSwitcher() {
+      const switcherButtons = document.querySelectorAll('.grid-layout-btn');
+      const productGrid = document.querySelector('.js-product-grid');
+
+      if (!productGrid || switcherButtons.length === 0) return;
+
+      // 恢复上次切换保存的状态
+      const savedColumns = localStorage.getItem('shopify-grid-columns');
+      if (savedColumns) {
+        updateGridColumns(savedColumns);
+      }
+
+      switcherButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          const columns = button.getAttribute('data-grid-columns');
+          updateGridColumns(columns);
+          localStorage.setItem('shopify-grid-columns', columns);
+        });
+      });
+
+      function updateGridColumns(cols) {
+        switcherButtons.forEach(btn => {
+          if (btn.getAttribute('data-grid-columns') === cols) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        productGrid.className = productGrid.className.replace(/grid--\d+-col-desktop/g, `grid--${cols}-col-desktop`);
+      }
+    }
+
+    initGridLayoutSwitcher();
+
+    // 监听 AJAX 动态加载（筛选与排序刷新）
+    const observer = new MutationObserver(() => {
+      initGridLayoutSwitcher();
+    });
+
+    const gridContainer = document.getElementById('ProductGridContainer');
+    if (gridContainer) {
+      observer.observe(gridContainer, { childList: true, subtree: true });
+    }
+  });
+</script>
 
 {% schema %}
 {
