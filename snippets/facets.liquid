@@ -15,6 +15,38 @@
 {{ 'component-show-more.css' | asset_url | stylesheet_tag }}
 {{ 'component-swatch-input.css' | asset_url | stylesheet_tag }}
 {{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+{% style %}
+
+/* Layout Switcher UI */
+.grid-layout-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 15px;
+  margin-right: 30px;
+}
+
+.grid-layout-btn {
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+  color: #888;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.grid-layout-btn.active,
+.grid-layout-btn:hover {
+  color: #000;
+  border-color: #000;
+  background-color: #f5f5f5;
+}
+
+{% endstyle %}
 
 {%- liquid
   assign sort_by = results.sort_by | default: results.default_sort_by
@@ -130,6 +162,48 @@
 
               {% case filter.type %}
                 {% when 'boolean', 'list' %}
+                                {% comment %} Layout Switcher Controls {% endcomment %}
+              <div class="grid-layout-switcher">
+                <button
+                  type="button"
+                  class="grid-layout-btn"
+                  data-grid-columns="2"
+                  aria-label="2 columns per row"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <rect x="2" y="2" width="7" height="16" rx="1" />
+                    <rect x="11" y="2" width="7" height="16" rx="1" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="grid-layout-btn active"
+                  data-grid-columns="4"
+                  aria-label="4 columns per row"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <rect x="1" y="2" width="3.5" height="16" rx="0.5" />
+                    <rect x="6" y="2" width="3.5" height="16" rx="0.5" />
+                    <rect x="11" y="2" width="3.5" height="16" rx="0.5" />
+                    <rect x="16" y="2" width="3.5" height="16" rx="0.5" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="grid-layout-btn"
+                  data-grid-columns="6"
+                  aria-label="6 columns per row"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <rect x="0.9" y="2" width="2.2" height="16" rx="0.5" />
+                    <rect x="4.1" y="2" width="2.2" height="16" rx="0.5" />
+                    <rect x="7.3" y="2" width="2.2" height="16" rx="0.5" />
+                    <rect x="10.5" y="2" width="2.2" height="16" rx="0.5" />
+                    <rect x="13.7" y="2" width="2.2" height="16" rx="0.5" />
+                    <rect x="16.9" y="2" width="2.2" height="16" rx="0.5" />
+                  </svg>
+                </button>
+              </div>
                   <details
                     id="Details-{{ filter.param_name | escape }}-{{ section.id }}"
                     class="{% if filter_type == 'horizontal' %}disclosure-has-popup facets__disclosure{% else %} facets__disclosure-vertical{% endif %} js-filter"
