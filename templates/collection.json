@@ -12,9 +12,10 @@
     "main-collection-banner": {
       "type": "main-collection-banner",
       "settings": {
-        "show_collection_description": true,
+        "show_collection_title": false,
+        "show_collection_description": false,
         "show_collection_image": false,
-        "color_scheme": "scheme-1"
+        "color_scheme": "scheme-1",
       }
     },
     "hero-image": {
@@ -25,9 +26,13 @@
           "settings": {
             "image": "shopify://shop_images/PPA7_Lifestyle_1800x600_334ea337-9f9a-4fd3-8101-91e27dde7186.jpg?v=1786326601",
             "link": "",
-            "title": "ELEGAN Series",
-            "text": "",
-            "text_position": "top-left"
+            "title": "ELEGAN R Series",
+            "text": "<p>ELEGAN Series is a collection of premium, high-quality products designed to elevate your lifestyle. Discover the perfect blend of style and functionality.</p>",
+            "text_position": "top-left",
+            "title_color": "#252525",
+            "text_color": "#252525",
+            "button_text": "Shop Now",
+
           }
         },
       },

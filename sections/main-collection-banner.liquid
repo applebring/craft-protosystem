@@ -45,18 +45,19 @@
       </div>
     {%- endif -%}
   <div class="collection-hero__inner page-width {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-    
+    {%- if section.settings.show_collection_title -%}
     <div class="collection-hero__text-wrapper">
+      
       <h1 class="collection-hero__title">
         <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
         {{- collection.title | escape -}}
       </h1>
-
+      
       {%- if section.settings.show_collection_description -%}
         <div class="collection-hero__description rte">{{ collection.description }}</div>
       {%- endif -%}
     </div>
-
+    {%- endif -%}
     {%- if section.settings.show_collection_image and collection.image -%}
       <div class="collection-hero__image-container media gradient">
         <img
@@ -96,7 +97,7 @@
       "id": "width_breadcrumb",
       "label": "Width Breadcrumb",
       "default": "container",
-      "options": [
+    "options": [
         {
           "value": "container",
           "label": "Box"
@@ -110,6 +111,12 @@
     {
       "type": "paragraph",
       "content": "t:sections.main-collection-banner.settings.paragraph.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_title",
+      "default": true,
+      "label": "show collection title"
     },
     {
       "type": "checkbox",

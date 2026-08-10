@@ -1,0 +1,471 @@
+{%- comment -%}
+  Section: Product Detail Tabs & Dynamic Scroll
+  Description: Sticky/Static tabs navigation linking to product description, features, specifications, and downloads.
+{%- endcomment -%}
+
+<style>
+  #ProductDetailTabs-{{ section.id }} {
+    --pdt-header-offset: 0px; /* 默认 Header 偏移量 */
+    width: 100%;
+    margin: 40px 0;
+    font-family: inherit;
+    color: #333;
+  }
+
+  /* Tabs Navigation Header */
+  .pdt-tabs-nav-wrapper {
+    height:3rem;
+    line-height: 3rem;
+    {% comment %} background-color: #ffffff;
+    border-bottom: 2px solid #e5e5e5;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); {% endcomment %}
+    z-index: 2;
+  }
+
+  /* 开启吸顶时的样式 */
+  .pdt-tabs-nav-wrapper.is-sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    top: var(--pdt-header-offset, 0px); 
+    transition: top 0.1s ease;
+  }
+
+  /* 关闭吸顶时的样式 */
+  .pdt-tabs-nav-wrapper.is-static {
+    position: relative;
+    top: 0;
+  }
+
+  .pdt-tabs-nav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 30px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .pdt-tabs-nav::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  .pdt-tab-item {
+    padding: 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+  }
+
+  .pdt-tab-item:hover {
+    color: #000;
+  }
+
+  .pdt-tab-item.active {
+    color: #000;
+    border-bottom-color: #000; /* 高亮下划线颜色 */
+  }
+
+  /* Content Sections */
+  .pdt-content-wrapper {
+    padding-top: 20px;
+  }
+
+  .pdt-block-item {
+    {% comment %} padding: 40px 0; {% endcomment %}
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* 吸顶模式下的跳转留白偏移 */
+  .pdt-tabs-nav-wrapper.is-sticky + .pdt-content-wrapper .pdt-block-item {
+    scroll-margin-top: calc(var(--pdt-header-offset, 0px) + 60px);
+  }
+
+  /* 非吸顶模式下的跳转留白偏移 */
+  .pdt-tabs-nav-wrapper.is-static + .pdt-content-wrapper .pdt-block-item {
+    scroll-margin-top: calc(var(--pdt-header-offset, 0px) + 20px);
+  }
+
+  .pdt-block-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #111;
+  }
+
+  .pdt-block-body {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #4a4a4a;
+  }
+
+  /* Spec & Download UI Styles */
+  .pdt-specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  .pdt-specs-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .pdt-specs-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  .pdt-download-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pdt-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    width: fit-content;
+    transition: background-color 0.2s;
+  }
+
+  .pdt-download-btn:hover {
+    background-color: #e9e9e9;
+    color: #000;
+  }
+
+  .pdt-download-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+</style>
+
+<div class="pdt-section" id="ProductDetailTabs-{{ section.id }}">
+  <!-- Tabs Navbar (根据后台设置切换 is-sticky 或 is-static 类) -->
+  <div class="pdt-tabs-nav-wrapper {% if section.settings.enable_sticky %}is-sticky{% else %}is-static{% endif %}">
+    <div class="page-width">
+      <ul class="pdt-tabs-nav">
+        {% if section.settings.show_description %}
+          <li><a class="pdt-tab-item active" data-target="pdt-description-{{ section.id }}">{{ section.settings.tab_desc_title }}</a></li>
+        {% endif %}
+        {% if section.settings.show_features %}
+          <li><a class="pdt-tab-item" data-target="pdt-features-{{ section.id }}">{{ section.settings.tab_features_title }}</a></li>
+        {% endif %}
+        {% if section.settings.show_specs %}
+          <li><a class="pdt-tab-item" data-target="pdt-specs-{{ section.id }}">{{ section.settings.tab_specs_title }}</a></li>
+        {% endif %}
+        {% if section.settings.show_downloads %}
+          <li><a class="pdt-tab-item" data-target="pdt-downloads-{{ section.id }}">{{ section.settings.tab_downloads_title }}</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Content Section Body -->
+  <div class="page-width pdt-content-wrapper">
+    <!-- Description Block -->
+    {% if section.settings.show_description %}
+      <div class="pdt-block-item" id="pdt-description-{{ section.id }}" data-tab-section>
+        <h3 class="pdt-block-title">{{ section.settings.tab_desc_title }}</h3>
+        <div class="pdt-block-body">
+          {% if product.description != blank %}
+            {{ product.description }}
+          {% else %}
+            {{ section.settings.custom_description }}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Features Block -->
+    {% if section.settings.show_features %}
+      <div class="pdt-block-item" id="pdt-features-{{ section.id }}" data-tab-section>
+        <h3 class="pdt-block-title">{{ section.settings.tab_features_title }}</h3>
+        <div class="pdt-block-body">
+          {{ section.settings.features_content }}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Specification Block -->
+    {% if section.settings.show_specs %}
+      <div class="pdt-block-item" id="pdt-specs-{{ section.id }}" data-tab-section>
+        <h3 class="pdt-block-title">{{ section.settings.tab_specs_title }}</h3>
+        <div class="pdt-block-body">
+          {{ section.settings.specs_content }}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Download Block -->
+    {% if section.settings.show_downloads %}
+      <div class="pdt-block-item" id="pdt-downloads-{{ section.id }}" data-tab-section>
+        <h3 class="pdt-block-title">{{ section.settings.tab_downloads_title }}</h3>
+        <div class="pdt-block-body">
+          <div class="pdt-download-list">
+            {% if section.settings.download_url_1 != blank %}
+              <a href="{{ section.settings.download_url_1 }}" class="pdt-download-btn" target="_blank" download>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>{{ section.settings.download_label_1 | default: "Download File 1" }}</span>
+              </a>
+            {% endif %}
+
+            {% if section.settings.download_url_2 != blank %}
+              <a href="{{ section.settings.download_url_2 }}" class="pdt-download-btn" target="_blank" download>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>{{ section.settings.download_label_2 | default: "Download Manual (PDF)" }}</span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sectionContainer = document.getElementById('ProductDetailTabs-{{ section.id }}');
+    if (!sectionContainer) return;
+
+    const navWrapper = sectionContainer.querySelector('.pdt-tabs-nav-wrapper');
+    const isStickyEnabled = navWrapper && navWrapper.classList.contains('is-sticky');
+    const tabLinks = sectionContainer.querySelectorAll('.pdt-tab-item');
+    const sections = sectionContainer.querySelectorAll('[data-tab-section]');
+    let isClickScrolling = false;
+    let observer = null;
+
+    // 1. 动态获取 Header 高度（仅在需要吸顶或计算平滑跳转偏移时执行）
+    function updateHeaderOffset() {
+      const headerElem = document.querySelector('.section-header, sticky-header, header, .header-wrapper');
+      let offset = 0;
+
+      if (headerElem) {
+        const style = window.getComputedStyle(headerElem);
+        if (style.position === 'sticky' || style.position === 'fixed' || headerElem.tagName.toLowerCase() === 'sticky-header') {
+          offset = headerElem.offsetHeight || 0;
+        }
+      }
+
+      sectionContainer.style.setProperty('--pdt-header-offset', `${offset}px`);
+      return offset;
+    }
+
+    if (isStickyEnabled) {
+      updateHeaderOffset();
+      window.addEventListener('resize', updateHeaderOffset);
+      window.addEventListener('scroll', updateHeaderOffset, { passive: true });
+    }
+
+    // 2. 点击 Tab 跳转对应 Block
+    tabLinks.forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('data-target');
+        const targetSection = document.getElementById(targetId);
+
+        if (targetSection) {
+          isClickScrolling = true;
+
+          tabLinks.forEach(item => item.classList.remove('active'));
+          this.classList.add('active');
+
+          targetSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+
+          setTimeout(() => {
+            isClickScrolling = false;
+          }, 800);
+        }
+      });
+    });
+
+    // 3. 页面滚动监听（IntersectionObserver 动态高亮 Tab）
+    function initObserver() {
+      if (observer) observer.disconnect();
+
+      const currentHeaderOffset = isStickyEnabled ? updateHeaderOffset() : 0;
+      const navWrapperHeight = navWrapper?.offsetHeight || 50;
+      // 计算 Top Margin 触发边界
+      const topMargin = isStickyEnabled 
+        ? currentHeaderOffset + navWrapperHeight + 10 
+        : currentHeaderOffset + 10;
+
+      const observerOptions = {
+        root: null,
+        rootMargin: `-${topMargin}px 0px -50% 0px`,
+        threshold: 0
+      };
+
+      observer = new IntersectionObserver((entries) => {
+        if (isClickScrolling) return;
+
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const activeId = entry.target.getAttribute('id');
+            tabLinks.forEach(link => {
+              if (link.getAttribute('data-target') === activeId) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        });
+      }, observerOptions);
+
+      sections.forEach(sec => observer.observe(sec));
+    }
+
+    initObserver();
+    window.addEventListener('resize', initObserver);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product Detail Tabs",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable Sticky Navigation",
+      "info": "When enabled, the tabs bar will stick to the top when scrolling down.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Description Tab Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show Description Tab",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tab_desc_title",
+      "label": "Tab Title",
+      "default": "Description"
+    },
+    {
+      "type": "richtext",
+      "id": "custom_description",
+      "label": "Custom Description (If Product Has No Description)",
+      "default": "<p>Detailed description about your product goes here...</p>"
+    },
+    {
+      "type": "header",
+      "content": "Features Tab Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_features",
+      "label": "Show Features Tab",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tab_features_title",
+      "label": "Tab Title",
+      "default": "Features"
+    },
+    {
+      "type": "richtext",
+      "id": "features_content",
+      "label": "Features Content",
+      "default": "<ul><li>High Quality Material</li><li>Durable & Long Lasting</li><li>Ergonomic Design</li></ul>"
+    },
+    {
+      "type": "header",
+      "content": "Specifications Tab Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_specs",
+      "label": "Show Specification Tab",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tab_specs_title",
+      "label": "Tab Title",
+      "default": "Specifications"
+    },
+    {
+      "type": "html",
+      "id": "specs_content",
+      "label": "Specifications (HTML Table)",
+      "default": "<table class='pdt-specs-table'><tr><td><strong>Dimensions</strong></td><td>10 x 5 x 2 inches</td></tr><tr><td><strong>Weight</strong></td><td>1.2 lbs</td></tr><tr><td><strong>Material</strong></td><td>Stainless Steel</td></tr></table>"
+    },
+    {
+      "type": "header",
+      "content": "Downloads Tab Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_downloads",
+      "label": "Show Downloads Tab",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tab_downloads_title",
+      "label": "Tab Title",
+      "default": "Downloads"
+    },
+    {
+      "type": "text",
+      "id": "download_label_1",
+      "label": "File 1 Label",
+      "default": "User Manual (PDF)"
+    },
+    {
+      "type": "url",
+      "id": "download_url_1",
+      "label": "File 1 URL"
+    },
+    {
+      "type": "text",
+      "id": "download_label_2",
+      "label": "File 2 Label",
+      "default": "Tech Spec Sheet"
+    },
+    {
+      "type": "url",
+      "id": "download_url_2",
+      "label": "File 2 URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Sticky Detail Tabs"
+    }
+  ]
+}
+{% endschema %}
