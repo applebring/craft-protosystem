@@ -143,8 +143,23 @@
     }
   }
 {%- endstyle -%}
+{%- assign container_class = '' -%}
+{%- case section.settings.setwidth -%}
+  {%- when 'page-width' -%}
+    {%- assign container_class = 'page-width' -%}
+  {%- when 'boxed' -%}
+    {%- assign container_class = 'boxed' -%}
+  {%- when 'full' -%}
+    {%- assign container_class = 'full' -%}
+  {%- when 'xs-container' -%}
+    {%- assign container_class = 'xs-container' -%}
+  {%- when 'boxed' -%}
+    {%- assign container_class = 'container' -%}
+  {%- else -%}
+    {%- assign container_class = 'full-width' -%}
+{%- endcase -%}
 
-<div class="hero-carousel-{{ section.id }}" data-aos="{{ section.settings.animation }}">
+<div class="hero-carousel-{{ section.id }} {{ container_class }}" data-aos="{{ section.settings.animation }}">
   <common-swiper mode="media">
     <script type="application/json" data-swiper-config>
       {
@@ -230,285 +245,12 @@
   </common-swiper>
 </div>
 
-<script>
-  (function () {
-    if (customElements.get('common-swiper')) return;
-
-    customElements.define(
-      'common-swiper',
-      class CommonSwiper extends HTMLElement {
-        static config = () => ({
-          slidesPerView: 1,
-          spaceBetween: 10,
-          breakpoints: {
-            768: {
-              spaceBetween: 24,
-            },
-            1240: {
-              spaceBetween: 32,
-            },
-          },
-          navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-          },
-        });
-
-        constructor() {
-          super();
-          this.only_mobile = this.hasAttribute('only-mobile');
-          this.only_desktop = this.hasAttribute('only-desktop');
-          this.initAttempts = 0;
-        }
-
-        connectedCallback() {
-          if (this.only_mobile && window.innerWidth > 768) return;
-          if (this.only_desktop && window.innerWidth < 768) return;
-
-          this.container = this.querySelector('.swiper');
-          if (!this.container) return;
-          if (!this.querySelectorAll('.swiper-slide')?.length) return;
-
-          this.isMediaMode = this.getAttribute('mode') == 'media';
-          if (this.isMediaMode) {
-            this.medias = [];
-
-            this.querySelectorAll('.swiper-slide').forEach((slide) => {
-              const media = {};
-
-              if (slide.querySelector('video')) {
-                media.type = 'video';
-                media.element = slide.querySelector('video');
-                this.hasVideo = true;
-
-                media.element.addEventListener('ended', () => {
-                  this.waiting = false;
-                  this.swiper && this.swiper.slideNext();
-                });
-              } else if (slide.querySelector('img')) {
-                media.type = 'image';
-                media.element = slide.querySelector('img');
-              }
-
-              this.medias.push(media);
-            });
-          }
-
-          this.waitForSwiper();
-        }
-
-        waitForSwiper() {
-          if (typeof window.Swiper === 'undefined') {
-            this.initAttempts += 1;
-
-            if (this.initAttempts <= 40) {
-              window.setTimeout(() => this.waitForSwiper(), 100);
-            }
-
-            return;
-          }
-
-          this.initConfig();
-        }
-
-        initConfig() {
-          this.config = this.getConfig();
-
-          if (this.hasVideo) delete this.config.autoplay;
-
-          if (this.hasAttribute('thumbnail')) {
-            this.config.thumbs = {};
-
-            const thumbnailElement = document.querySelector(this.getAttribute('thumbnail'));
-            if (!thumbnailElement) {
-              this.initSwiper();
-              return;
-            }
-
-            if (
-              (thumbnailElement.hasAttribute('only-mobile') && window.innerWidth > 768) ||
-              (thumbnailElement.hasAttribute('only-desktop') && window.innerWidth < 768)
-            ) {
-              this.initSwiper();
-              return;
-            }
-
-            if (thumbnailElement.swiper) {
-              this.thumbnailSwiper = thumbnailElement.swiper;
-              this.config.thumbs.swiper = thumbnailElement.swiper;
-              this.initSwiper();
-            } else {
-              thumbnailElement.addEventListener('swiper-init', ({ detail: swiper }) => {
-                this.thumbnailSwiper = swiper;
-                this.config.thumbs.swiper = swiper;
-                this.initSwiper();
-              });
-            }
-          } else {
-            this.initSwiper();
-          }
-        }
-
-        initSwiper() {
-          if (!this.config.on) this.config.on = {};
-
-          if (!this.config.on.init) {
-            this.config.on.init = function (swiper) {
-              this.dispatchEvent(new CustomEvent('swiper-init', { detail: swiper }));
-
-              if (this.config.autoplay && this.hasAttribute('mouse-stop')) {
-                this.mouseHandler();
-              }
-            }.bind(this);
-          }
-
-          this.swiper = new Swiper(this.container, this.config);
-
-          if (this.hasVideo) {
-            this.startAutoPlay();
-          }
-
-          if (window.innerWidth < 768) return;
-
-          if (this.querySelector('.left-swiper') && this.querySelector('.right-swiper')) {
-            this.leftSwiper = new Swiper(this.querySelector('.left-swiper'), {
-              loop: true,
-              simulateTouch: false,
-            });
-
-            this.rightSwiper = new Swiper(this.querySelector('.right-swiper'), {
-              loop: true,
-              simulateTouch: false,
-            });
-
-            this.swiper.controller.control = [this.leftSwiper, this.rightSwiper];
-          }
-        }
-
-        startAutoPlay() {
-          this.waiting = false;
-          this.task = null;
-
-          const autoPlayNext = () => {
-            if (this.waiting) return;
-
-            clearTimeout(this.task);
-            this.waiting = true;
-
-            const media = this.medias[this.swiper.activeIndex];
-            if (!media) return;
-
-            if (media.type == 'video') {
-              if (media.element.ended) {
-                media.element.currentTime = 0;
-              }
-
-              media.element.play();
-            } else {
-              this.task = setTimeout(() => {
-                this.task = null;
-                this.waiting = false;
-                this.swiper.slideNext();
-              }, 3000);
-            }
-          };
-
-          this.swiper.on('slideChange', () => {
-            setTimeout(() => {
-              autoPlayNext();
-            }, 0);
-          });
-
-          autoPlayNext();
-        }
-
-        mouseHandler() {
-          this.container.addEventListener('mouseenter', () => {
-            this.swiper.autoplay.stop();
-          });
-
-          this.container.addEventListener('mouseleave', () => {
-            this.swiper.autoplay.start();
-          });
-        }
-
-        getConfig() {
-          let config = JSON.parse(this.querySelector('script[data-swiper-config]')?.textContent || null) || null;
-          config = config || CommonSwiper.config();
-
-          if (config?.on) {
-            config.on = this.formatFunction(config.on);
-          }
-
-          if (config?.breakpoints) {
-            for (let key in config.breakpoints) {
-              if (config.breakpoints[key]?.on) {
-                config.breakpoints[key].on = this.formatFunction(config.breakpoints[key].on);
-              }
-            }
-          }
-
-          if (config.navigation) {
-            if (typeof config.navigation.nextEl === 'string') {
-              config.navigation.nextEl = this.querySelector(config.navigation.nextEl);
-            }
-
-            if (typeof config.navigation.prevEl === 'string') {
-              config.navigation.prevEl = this.querySelector(config.navigation.prevEl);
-            }
-          }
-
-          if (config.scrollbar && config.scrollbar.el) {
-            config.scrollbar.el = this.querySelector(config.scrollbar.el);
-          }
-
-          if (
-            this.querySelector('.swiper-pagination') ||
-            this.closest('.swiper-father')?.querySelector('.swiper-pagination')
-          ) {
-            config.pagination = {
-              el:
-                this.querySelector('.swiper-pagination') ||
-                this.closest('.swiper-father').querySelector('.swiper-pagination'),
-              clickable: true,
-            };
-          } else {
-            delete config.pagination;
-          }
-
-          return config;
-        }
-
-        formatFunction(oldOn) {
-          const newOn = {};
-
-          for (let key in oldOn) {
-            if (oldOn[key]) {
-              newOn[key] = new Function('return ' + oldOn[key])();
-            }
-          }
-
-          return newOn;
-        }
-
-        getBeforeCreateEvent() {
-          return swiperEvent[this.getAttribute('before-create')]?.bind(this) || null;
-        }
-
-        disconnectedCallback() {
-          this.swiper?.destroy();
-        }
-      }
-    );
-  })();
-</script>
-
 {% schema %}
 {
   "name": "Hero Carousel",
   "tag": "section",
   "settings": [
-    { "type": "select", "id": "setwidth", "label": "Width", "default": "full", "options": [{ "value": "full", "label": "Full" }, { "value": "boxed", "label": "Boxed" }] },
+    { "type": "select", "id": "setwidth", "label": "Width", "default": "full", "options": [{ "value": "full", "label": "Full" }, { "value": "boxed", "label": "Boxed" }, { "value": "page-width", "label": "page width" }] },
     { "type": "color", "id": "bgsection", "label": "Background Color", "default": "#ffffff" },
     { "type": "text", "id": "animation", "label": "Animation Class", "default": "fade-up" },
     { "type": "number", "id": "desktop_height", "label": "Desktop Height (px)", "default": 800 },

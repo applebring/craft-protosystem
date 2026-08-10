@@ -36,8 +36,8 @@
       ],
       "custom_css": [],
       "settings": {
-        "setwidth": "full",
-        "bgsection": "#ffffff",
+        "setwidth": "page-width",
+        "bgsection": "",
         "animation": "fade-up",
         "desktop_height": 800,
         "mobile_height": 350,
@@ -58,9 +58,9 @@
         "text_size_mobile": 14,
         "heading_weight": "700",
         "content_max_width": 600,
-        "paddingsection": "0px 0px 0px 0px",
+        "paddingsection": "0px 5rem 0px 5rem",
         "paddingmobile": "0px 0px 0px 0px",
-        "marginsection": "0px 0px 0px 0px",
+        "marginsection": "0 auto",
         "marginmobile": "0px 0px 0px 0px"
       }
     },
