@@ -17,6 +17,53 @@
         "color_scheme": "scheme-1"
       }
     },
+    "hero-image": {
+      "type": "hero-carousel",
+      "blocks": {
+        "slide_1": {
+          "type": "carousel-slide",
+          "settings": {
+            "image": "shopify://shop_images/PPA7_Lifestyle_1800x600_334ea337-9f9a-4fd3-8101-91e27dde7186.jpg?v=1786326601",
+            "link": "",
+            "title": "ELEGAN Series",
+            "text": "",
+            "text_position": "top-left"
+          }
+        },
+      },
+      "block_order": [
+        "slide_1",
+      ],
+      "custom_css": [],
+      "settings": {
+        "setwidth": "full",
+        "bgsection": "#ffffff",
+        "animation": "fade-up",
+        "desktop_height": 800,
+        "mobile_height": 350,
+        "autoplay": true,
+        "autoplay_speed": 5000,
+        "speed": 600,
+        "show_arrows": false,
+        "show_dots": true,
+        "show_overlay": false,
+        "overlay_opacity": 20,
+        "arrow_color": "#ffffff",
+        "dot_color": "#ffffff",
+        "dot_active_color": "#ffffff",
+        "text_color": "#ffffff",
+        "heading_size": 48,
+        "heading_size_mobile": 32,
+        "text_size": 16,
+        "text_size_mobile": 14,
+        "heading_weight": "700",
+        "content_max_width": 600,
+        "paddingsection": "0px 0px 0px 0px",
+        "paddingmobile": "0px 0px 0px 0px",
+        "marginsection": "0px 0px 0px 0px",
+        "marginmobile": "0px 0px 0px 0px"
+      }
+    },
     "main-collection-product-grid": {
       "type": "main-collection-product-grid",
       "settings": {
@@ -40,6 +87,7 @@
   },
   "order": [
     "main-collection-banner",
+    "hero-image",
     "main-collection-product-grid"
   ]
 }

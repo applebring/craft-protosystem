@@ -99,6 +99,7 @@
 
 .breadcrumbs{
   display: flex;
+  padding: 3rem 0;
 }
 .breadcrumbs-collection ol{
   list-style: none;
