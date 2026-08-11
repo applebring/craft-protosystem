@@ -7,7 +7,14 @@ if (!customElements.get('product-modal')) {
       }
 
       hide() {
-        super.hide();
+        // 重写子类hide方法，隐藏模态框时，清空模态框内容
+        const closeButton = this.querySelector('[id^="ModalClose-"]');
+        if (closeButton) {
+          closeButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            super.hide();
+          });
+        }
       }
 
       show(opener) {
