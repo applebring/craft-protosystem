@@ -12,9 +12,8 @@ npm run start
 
 ### 字段明细 (Fields)
 | 字段名称 | 键 (Handle) | 类型 (Type) | 描述 |
-| :--- | :--- | :--- | :--- |
-
-
+| :Specification | :--- | :--- | :--- | :[{col:"",value:""},{col:"",value:""}] |
+| :Download | :--- | :--- | :--- | :多个附件上传 |
 ---
 
 ## 2. 代码调用 (Liquid Usage)

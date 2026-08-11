@@ -1,11 +1,11 @@
 {%- comment -%}
   Section: Product Detail Tabs & Dynamic Scroll
-  Description: Sticky/Static tabs navigation linking to product description, features, specifications, and downloads.
+  Description: Sticky/Static tabs navigation linking to product description, features, specifications (4-column layout with customizable table background from metafield), and download.
 {%- endcomment -%}
 
 <style>
   #ProductDetailTabs-{{ section.id }} {
-    --pdt-header-offset: 0px; /* 默认 Header 偏移量 */
+    --pdt-header-offset: 0px;
     width: 100%;
     margin: 40px 0;
     font-family: inherit;
@@ -14,15 +14,11 @@
 
   /* Tabs Navigation Header */
   .pdt-tabs-nav-wrapper {
-    height:3rem;
+    height: 3rem;
     line-height: 3rem;
-    {% comment %} background-color: #ffffff;
-    border-bottom: 2px solid #e5e5e5;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); {% endcomment %}
     z-index: 2;
   }
 
-  /* 开启吸顶时的样式 */
   .pdt-tabs-nav-wrapper.is-sticky {
     position: -webkit-sticky;
     position: sticky;
@@ -30,7 +26,6 @@
     transition: top 0.1s ease;
   }
 
-  /* 关闭吸顶时的样式 */
   .pdt-tabs-nav-wrapper.is-static {
     position: relative;
     top: 0;
@@ -45,11 +40,11 @@
     margin: 0;
     padding: 0;
     overflow-x: auto;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
   }
 
   .pdt-tabs-nav::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
   }
 
   .pdt-tab-item {
@@ -70,7 +65,7 @@
 
   .pdt-tab-item.active {
     color: #000;
-    border-bottom-color: #000; /* 高亮下划线颜色 */
+    border-bottom-color: #000;
   }
 
   /* Content Sections */
@@ -79,16 +74,13 @@
   }
 
   .pdt-block-item {
-    {% comment %} padding: 40px 0; {% endcomment %}
     border-bottom: 1px solid #f0f0f0;
   }
 
-  /* 吸顶模式下的跳转留白偏移 */
   .pdt-tabs-nav-wrapper.is-sticky + .pdt-content-wrapper .pdt-block-item {
     scroll-margin-top: calc(var(--pdt-header-offset, 0px) + 60px);
   }
 
-  /* 非吸顶模式下的跳转留白偏移 */
   .pdt-tabs-nav-wrapper.is-static + .pdt-content-wrapper .pdt-block-item {
     scroll-margin-top: calc(var(--pdt-header-offset, 0px) + 20px);
   }
@@ -106,11 +98,12 @@
     color: #4a4a4a;
   }
 
-  /* Spec & Download UI Styles */
+  /* 4列规格表格样式（支持后台自定义背景颜色） */
   .pdt-specs-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    background-color: {{ section.settings.specs_bg_color | default: '#ffffff' }};
   }
 
   .pdt-specs-table td {
@@ -118,10 +111,18 @@
     border-bottom: 1px solid #eee;
   }
 
-  .pdt-specs-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+  .pdt-specs-table td.pdt-spec-label {
+    width: 20%;
+    background-color: {{ section.settings.specs_label_bg_color | default: '#f9f9f9' }};
+    font-weight: bold;
+    color: #333;
   }
 
+  .pdt-specs-table td.pdt-spec-value {
+    width: 30%;
+  }
+
+  /* Download UI Styles */
   .pdt-download-list {
     display: flex;
     flex-direction: column;
@@ -152,10 +153,24 @@
     width: 18px;
     height: 18px;
   }
+
+  /* 响应式适配：手机端屏幕较小时自动回退为单列堆叠 */
+  @media screen and (max-width: 768px) {
+    .pdt-specs-table td.pdt-spec-label,
+    .pdt-specs-table td.pdt-spec-value {
+      display: block;
+      width: 100% !important;
+    }
+    .pdt-specs-table tr {
+      display: block;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+  }
 </style>
 
 <div class="pdt-section" id="ProductDetailTabs-{{ section.id }}">
-  <!-- Tabs Navbar (根据后台设置切换 is-sticky 或 is-static 类) -->
+  <!-- Tabs Navbar -->
   <div class="pdt-tabs-nav-wrapper {% if section.settings.enable_sticky %}is-sticky{% else %}is-static{% endif %}">
     <div class="page-width">
       <ul class="pdt-tabs-nav">
@@ -168,8 +183,8 @@
         {% if section.settings.show_specs %}
           <li><a class="pdt-tab-item" data-target="pdt-specs-{{ section.id }}">{{ section.settings.tab_specs_title }}</a></li>
         {% endif %}
-        {% if section.settings.show_downloads %}
-          <li><a class="pdt-tab-item" data-target="pdt-downloads-{{ section.id }}">{{ section.settings.tab_downloads_title }}</a></li>
+        {% if section.settings.show_download %}
+          <li><a class="pdt-tab-item" data-target="pdt-download-{{ section.id }}">{{ section.settings.tab_download_title }}</a></li>
         {% endif %}
       </ul>
     </div>
@@ -201,40 +216,63 @@
       </div>
     {% endif %}
 
-    <!-- Specification Block -->
+    <!-- Specification Block (4-Column Metafield Layout with Customizable Background) -->
     {% if section.settings.show_specs %}
+      {%- assign specs_metafield = product.metafields.custom.specification.value -%}
       <div class="pdt-block-item" id="pdt-specs-{{ section.id }}" data-tab-section>
         <h3 class="pdt-block-title">{{ section.settings.tab_specs_title }}</h3>
         <div class="pdt-block-body">
-          {{ section.settings.specs_content }}
+          {% if specs_metafield != blank %}
+            <table class="pdt-specs-table">
+              {%- for spec in specs_metafield -%}
+                {%- assign index_remainder = forloop.index0 | modulo: 2 -%}
+                {%- if index_remainder == 0 -%}
+                  <tr>
+                {%- endif -%}
+                
+                  <td class="pdt-spec-label"><strong>{{ spec.col }}</strong></td>
+                  <td class="pdt-spec-value">{{ spec.value }}</td>
+
+                {%- if index_remainder == 1 or forloop.last -%}
+                  {%- if forloop.last and index_remainder == 0 -%}
+                    <td class="pdt-spec-label"></td>
+                    <td class="pdt-spec-value"></td>
+                  {%- endif -%}
+                  </tr>
+                {%- endif -%}
+              {%- endfor -%}
+            </table>
+          {% else %}
+            <p>{{ section.settings.specs_fallback_text | default: "No specifications." }}</p>
+          {% endif %}
         </div>
       </div>
     {% endif %}
 
-    <!-- Download Block -->
-    {% if section.settings.show_downloads %}
-      <div class="pdt-block-item" id="pdt-downloads-{{ section.id }}" data-tab-section>
-        <h3 class="pdt-block-title">{{ section.settings.tab_downloads_title }}</h3>
+    <!-- Download Block (Metafield) -->
+    {% if section.settings.show_download %}
+      {%- assign download_metafield = product.metafields.custom.download.value -%}
+      <div class="pdt-block-item" id="pdt-download-{{ section.id }}" data-tab-section>
+        <h3 class="pdt-block-title">{{ section.settings.tab_download_title }}</h3>
         <div class="pdt-block-body">
-          <div class="pdt-download-list">
-            {% if section.settings.download_url_1 != blank %}
-              <a href="{{ section.settings.download_url_1 }}" class="pdt-download-btn" target="_blank" download>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                <span>{{ section.settings.download_label_1 | default: "Download File 1" }}</span>
-              </a>
-            {% endif %}
-
-            {% if section.settings.download_url_2 != blank %}
-              <a href="{{ section.settings.download_url_2 }}" class="pdt-download-btn" target="_blank" download>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                <span>{{ section.settings.download_label_2 | default: "Download Manual (PDF)" }}</span>
-              </a>
-            {% endif %}
-          </div>
+          {% if download_metafield != blank %}
+            <div class="pdt-download-list">
+              {% for file in download_metafield %}
+                {%- assign file_url = file.url | default: file -%}
+                {%- assign file_title = file.title | default: file.filename | default: "Download File" -%}
+                {% if file_url != blank %}
+                  <a href="{{ file_url }}" class="pdt-download-btn" target="_blank" download>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>{{ file_title }}</span>
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>{{ section.settings.download_fallback_text | default: "No download files." }}</p>
+          {% endif %}
         </div>
       </div>
     {% endif %}
@@ -253,7 +291,6 @@
     let isClickScrolling = false;
     let observer = null;
 
-    // 1. 动态获取 Header 高度（仅在需要吸顶或计算平滑跳转偏移时执行）
     function updateHeaderOffset() {
       const headerElem = document.querySelector('.section-header, sticky-header, header, .header-wrapper');
       let offset = 0;
@@ -275,7 +312,6 @@
       window.addEventListener('scroll', updateHeaderOffset, { passive: true });
     }
 
-    // 2. 点击 Tab 跳转对应 Block
     tabLinks.forEach(link => {
       link.addEventListener('click', function (e) {
         e.preventDefault();
@@ -300,13 +336,11 @@
       });
     });
 
-    // 3. 页面滚动监听（IntersectionObserver 动态高亮 Tab）
     function initObserver() {
       if (observer) observer.disconnect();
 
       const currentHeaderOffset = isStickyEnabled ? updateHeaderOffset() : 0;
       const navWrapperHeight = navWrapper?.offsetHeight || 50;
-      // 计算 Top Margin 触发边界
       const topMargin = isStickyEnabled 
         ? currentHeaderOffset + navWrapperHeight + 10 
         : currentHeaderOffset + 10;
@@ -403,7 +437,7 @@
     },
     {
       "type": "header",
-      "content": "Specifications Tab Settings"
+      "content": "Specifications Tab Settings (Metafield)"
     },
     {
       "type": "checkbox",
@@ -418,48 +452,44 @@
       "default": "Specifications"
     },
     {
-      "type": "html",
-      "id": "specs_content",
-      "label": "Specifications (HTML Table)",
-      "default": "<table class='pdt-specs-table'><tr><td><strong>Dimensions</strong></td><td>10 x 5 x 2 inches</td></tr><tr><td><strong>Weight</strong></td><td>1.2 lbs</td></tr><tr><td><strong>Material</strong></td><td>Stainless Steel</td></tr></table>"
+      "type": "color",
+      "id": "specs_bg_color",
+      "label": "Table Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "specs_label_bg_color",
+      "label": "Label Column Background Color",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "text",
+      "id": "specs_fallback_text",
+      "label": "Fallback Text (If Metafield is Empty)",
+      "default": "No specifications."
     },
     {
       "type": "header",
-      "content": "Downloads Tab Settings"
+      "content": "download Tab Settings (Metafield)"
     },
     {
       "type": "checkbox",
-      "id": "show_downloads",
-      "label": "Show Downloads Tab",
+      "id": "show_download",
+      "label": "Show download Tab",
       "default": true
     },
     {
       "type": "text",
-      "id": "tab_downloads_title",
+      "id": "tab_download_title",
       "label": "Tab Title",
-      "default": "Downloads"
+      "default": "download"
     },
     {
       "type": "text",
-      "id": "download_label_1",
-      "label": "File 1 Label",
-      "default": "User Manual (PDF)"
-    },
-    {
-      "type": "url",
-      "id": "download_url_1",
-      "label": "File 1 URL"
-    },
-    {
-      "type": "text",
-      "id": "download_label_2",
-      "label": "File 2 Label",
-      "default": "Tech Spec Sheet"
-    },
-    {
-      "type": "url",
-      "id": "download_url_2",
-      "label": "File 2 URL"
+      "id": "download_fallback_text",
+      "label": "Fallback Text (If Metafield is Empty)",
+      "default": "No download files."
     }
   ],
   "presets": [
