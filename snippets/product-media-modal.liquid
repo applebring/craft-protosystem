@@ -9,6 +9,131 @@
   {% render 'product-media-modal' %}
 {% endcomment %}
 
+{%- style -%}
+  /* 让 Modal 弹窗占满全屏，并隐藏页面滚动条 */
+  .product-media-modal.media-modal {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    overflow: hidden;
+  }
+
+  .product-media-modal .product-media-modal__dialog {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-media-modal .product-media-modal__content {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+  }
+
+  .product-media-modal common-swiper {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+  }
+
+  .product-media-modal .swiper {
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-media-modal .swiper-slide {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .product-media-modal .swiper-slide img,
+  .product-media-modal .swiper-slide video,
+  .product-media-modal .swiper-slide model-viewer {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  /* 自定义左右切换按钮位置与样式 */
+  .product-media-modal .swiper-button-next,
+  .product-media-modal .swiper-button-prev {
+    color: {{ section.settings.arrow_color | default: '#ffffff' }};
+    background: rgba(0, 0, 0, 0.5);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    z-index: 30;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 0;
+  }
+
+  .product-media-modal .swiper-button-next::after,
+  .product-media-modal .swiper-button-prev::after {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .product-media-modal .swiper-button-prev {
+    left: 20px;
+  }
+
+  .product-media-modal .swiper-button-next {
+    right: 20px;
+  }
+
+  /* 底部指示器样式 */
+  .product-media-modal .swiper-pagination {
+    bottom: 25px !important;
+    z-index: 30;
+    position: absolute;
+    width: 100%;
+    left: 0;
+  }
+
+  /* 未激活时：灰色背景小圆点 */
+  .product-media-modal .swiper-pagination-bullet { 
+    background: #888888;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin: 0 4px;
+  }
+  
+  /* 激活时：蓝色背景长条圆角矩形高亮 */
+  .product-media-modal .swiper-pagination-bullet-active { 
+    background: #007aff;
+    opacity: 1;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  /* 关闭按钮层级调整，确保浮于最上层 */
+  .product-media-modal .product-media-modal__toggle {
+    z-index: 40;
+  }
+{%- endstyle -%}
+
 <product-modal id="ProductModal-{{ section.id }}" class="product-media-modal media-modal">
   <div
     class="product-media-modal__dialog color-{{ section.settings.color_scheme }} gradient"
@@ -32,26 +157,60 @@
       aria-label="{{ 'products.modal.label' | t }}"
       tabindex="0"
     >
-      {%- liquid
-        if product.selected_or_first_available_variant.featured_media != null
-          assign media = product.selected_or_first_available_variant.featured_media
-          render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: section.settings.hide_variants
-        endif
-      -%}
+      <common-swiper mode="media">
+        <script type="application/json" data-swiper-config>
+          {
+            "slidesPerView": 1,
+            "spaceBetween": 0,
+            "loop": false,
+            "watchOverflow": true,
+            "observer": true,
+            "observeParents": true,
+            "speed": 600,
+            "simulateTouch": true,
+            "grabCursor": true,
+            "navigation": {
+              "nextEl": ".swiper-button-next",
+              "prevEl": ".swiper-button-prev"
+            },
+            "pagination": {
+              "el": ".swiper-pagination",
+              "clickable": true
+            }
+          }
+        </script>
 
-      {%- for media in product.media -%}
-        {%- liquid
-          if section.settings.hide_variants and variant_images contains media.src or variant_images contains media.id
-            assign variant_image = true
-          else
-            assign variant_image = false
-          endif
+        <div class="swiper">
+          <div class="swiper-wrapper">
+            {%- if product.selected_or_first_available_variant.featured_media != null -%}
+              {%- assign media = product.selected_or_first_available_variant.featured_media -%}
+              <div class="swiper-slide" data-media-id="{{ media.id }}">
+                {%- render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: section.settings.hide_variants -%}
+              </div>
+            {%- endif -%}
 
-          unless media.id == product.selected_or_first_available_variant.featured_media.id
-            render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: variant_image
-          endunless
-        -%}
-      {%- endfor -%}
+            {%- for media in product.media -%}
+              {%- liquid
+                if section.settings.hide_variants and variant_images contains media.src or variant_images contains media.id
+                  assign variant_image = true
+                else
+                  assign variant_image = false
+                endif
+              -%}
+              
+              {%- unless media.id == product.selected_or_first_available_variant.featured_media.id -%}
+                <div class="swiper-slide" data-media-id="{{ media.id }}">
+                  {%- render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: variant_image -%}
+                </div>
+              {%- endunless -%}
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-pagination"></div>
+      </common-swiper>
     </div>
   </div>
 </product-modal>
