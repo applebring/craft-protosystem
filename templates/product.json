@@ -129,7 +129,7 @@
         "enable_sticky": false,
         "show_description": true,
         "tab_desc_title": "Description",
-        "custom_description": "<p>Default product overview details...</p>",
+        "custom_description": "",
         
         "show_features": true,
         "tab_features_title": "Features",
