@@ -155,12 +155,12 @@
       <!-- 移除自定义组件标签，直接使用标准的 Swiper HTML 结构 -->
       <div class="swiper product-media-swiper-{{ section.id }}">
         <div class="swiper-wrapper">
-          {%- if product.selected_or_first_available_variant.featured_media != null -%}
+          {% comment %} {%- if product.selected_or_first_available_variant.featured_media != null -%}
             {%- assign media = product.selected_or_first_available_variant.featured_media -%}
             <div class="swiper-slide" data-media-id="{{ media.id }}">
               {%- render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: section.settings.hide_variants -%}
             </div>
-          {%- endif -%}
+          {%- endif -%} {% endcomment %}
 
           {%- for media in product.media -%}
             {%- liquid
@@ -171,11 +171,11 @@
               endif
             -%}
             
-            {%- unless media.id == product.selected_or_first_available_variant.featured_media.id -%}
+            {% comment %} {%- unless media.id == product.selected_or_first_available_variant.featured_media.id -%} {% endcomment %}
               <div class="swiper-slide" data-media-id="{{ media.id }}">
                 {%- render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: variant_image -%}
               </div>
-            {%- endunless -%}
+            {% comment %} {%- endunless -%} {% endcomment %}
           {%- endfor -%}
         </div>
 
