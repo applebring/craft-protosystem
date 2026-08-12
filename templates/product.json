@@ -125,27 +125,30 @@
     },
     "product_detail_tabs": {
       "type": "product-detail-tabs",
+  "settings": {
+    "enable_sticky": false,
+    "show_description": true,
+    "tab_desc_title": "Description",
+    "custom_description": "",
+    "show_features": true,
+    "tab_features_title": "Features",
+    "features_content": "<ul><li>High durability material</li><li>Ergonomic and compact design</li><li>Lightweight and portable</li></ul>",
+    "show_specs": true,
+    "tab_specs_title": "Specifications",
+    "show_download": true,
+    "tab_download_title": "Download"
+  },
+  "blocks": {
+    "desc_richtext_1": {
+      "type": "description_richtext",
       "settings": {
-        "enable_sticky": false,
-        "show_description": true,
-        "tab_desc_title": "Description",
-        "custom_description": "",
-        
-        "show_features": true,
-        "tab_features_title": "Features",
-        "features_content": "<ul><li>High durability material</li><li>Ergonomic and compact design</li><li>Lightweight and portable</li></ul>",
-        
-        "show_specs": true,
-        "tab_specs_title": "Specifications",
-        "specs_content": "<table class='pdt-specs-table'><tbody><tr><td><strong>Dimensions</strong></td><td>10 x 5 x 2 inches</td></tr><tr><td><strong>Weight</strong></td><td>1.2 lbs</td></tr><tr><td><strong>Material</strong></td><td>Stainless Steel</td></tr></tbody></table>",
-        
-        "show_downloads": true,
-        "tab_downloads_title": "Downloads",
-        "download_label_1": "User Manual (PDF)",
-        "download_url_1": "https://cdn.shopify.com/s/files/1/0000/0000/files/manual.pdf",
-        "download_label_2": "Tech Spec Sheet",
-        "download_url_2": "https://cdn.shopify.com/s/files/1/0000/0000/files/spec_sheet.pdf"
+        "content": "<p>这里是自定义的富文本描述内容，您可以随时在后台调整文字排版和样式。</p>"
       }
+    }
+  },
+  "block_order": [
+    "desc_richtext_1"
+  ]
     },
     "related-products": {
       "type": "related-products",

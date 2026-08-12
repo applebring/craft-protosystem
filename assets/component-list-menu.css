@@ -30,21 +30,12 @@
 }
 
 
-/* 鼠标经过 header-menu 包含的 details 时展开下拉菜单 */
+/* 桌面端：动画完全由 JS (header-menu custom element) 驱动，
+   不再使用纯 CSS :hover 直接切换显示，
+   避免与 details[open] 状态不一致导致的闪烁/无法关闭问题 */
 @media screen and (min-width: 990px) {
-  header-menu details:hover > .header__submenu {
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  /* 解决鼠标移出 main link 与 submenu 之间的缝隙导致菜单瞬间关闭的问题 */
-  header-menu details {
-    /* position: relative; */
-  }
-  
+  /* summary 底部 padding 保留，确保 hover 区域连续 */
   header-menu details summary {
-    padding-bottom: 1rem; /* 确保 hover 区域连续 */
+    padding-bottom: 1rem;
   }
 }

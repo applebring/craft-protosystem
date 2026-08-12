@@ -1,6 +1,6 @@
 {%- comment -%}
   Section: Product Detail Tabs & Dynamic Scroll
-  Description: Sticky/Static tabs navigation linking to product description, features, specifications (4-column layout with customizable table background from metafield), and download.
+  Description: Sticky/Static tabs navigation linking to product description (with custom blocks), features, specifications, and download.
 {%- endcomment -%}
 
 <style>
@@ -75,6 +75,8 @@
 
   .pdt-block-item {
     border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
   }
 
   .pdt-tabs-nav-wrapper.is-sticky + .pdt-content-wrapper .pdt-block-item {
@@ -98,7 +100,59 @@
     color: #4a4a4a;
   }
 
-  /* 4列规格表格样式（支持后台自定义背景颜色） */
+  /* Description Custom Blocks Styles */
+  .pdt-desc-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .pdt-desc-richtext {
+    word-break: break-word;
+  }
+
+  .pdt-desc-image {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .pdt-desc-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .pdt-image-with-text {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .pdt-iwt-image {
+    flex: 1;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .pdt-iwt-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .pdt-iwt-content {
+    flex: 1;
+  }
+
+  .pdt-iwt-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 10px;
+  }
+
+  /* 4列规格表格样式 */
   .pdt-specs-table {
     width: 100%;
     border-collapse: collapse;
@@ -154,7 +208,7 @@
     height: 18px;
   }
 
-  /* 响应式适配：手机端屏幕较小时自动回退为单列堆叠 */
+  /* 响应式适配 */
   @media screen and (max-width: 768px) {
     .pdt-specs-table td.pdt-spec-label,
     .pdt-specs-table td.pdt-spec-value {
@@ -165,6 +219,9 @@
       display: block;
       margin-bottom: 10px;
       border-bottom: 1px solid #ddd;
+    }
+    .pdt-image-with-text {
+      flex-direction: column;
     }
   }
 </style>
@@ -192,16 +249,60 @@
 
   <!-- Content Section Body -->
   <div class="page-width pdt-content-wrapper">
-    <!-- Description Block -->
+    <!-- Description Block (With Custom Blocks Support) -->
     {% if section.settings.show_description %}
       <div class="pdt-block-item" id="pdt-description-{{ section.id }}" data-tab-section>
         <h3 class="pdt-block-title">{{ section.settings.tab_desc_title }}</h3>
         <div class="pdt-block-body">
-          {% if product.description != blank %}
-            {{ product.description }}
-          {% else %}
-            {{ section.settings.custom_description }}
-          {% endif %}
+          <div class="pdt-desc-blocks">
+            {%- assign has_desc_blocks = false -%}
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'description_richtext' or block.type == 'description_image' or block.type == 'description_iwt' -%}
+                {%- assign has_desc_blocks = true -%}
+                {%- case block.type -%}
+                  {%- when 'description_richtext' -%}
+                    <div class="pdt-desc-richtext" {{ block.shopify_attributes }}>
+                      {{ block.settings.content }}
+                    </div>
+                  {%- when 'description_image' -%}
+                    <div class="pdt-desc-image" {{ block.shopify_attributes }}>
+                      {%- if block.settings.image != blank -%}
+                        <img src="{{ block.settings.image | image_url: width: 1200 }}" alt="{{ block.settings.image.alt | escape }}" loading="lazy" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}">
+                      {%- else -%}
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                      {%- endif -%}
+                    </div>
+                  {%- when 'description_iwt' -%}
+                    <div class="pdt-image-with-text" style="flex-direction: {% if block.settings.layout == 'right' %}row-reverse{% else %}row{% endif %};" {{ block.shopify_attributes }}>
+                      <div class="pdt-iwt-image">
+                        {%- if block.settings.image != blank -%}
+                          <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.image.alt | escape }}" loading="lazy" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}">
+                        {%- else -%}
+                          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                        {%- endif -%}
+                      </div>
+                      <div class="pdt-iwt-content">
+                        {%- if block.settings.title != blank -%}
+                          <h4 class="pdt-iwt-title">{{ block.settings.title }}</h4>
+                        {%- endif -%}
+                        <div class="pdt-iwt-text">
+                          {{ block.settings.text }}
+                        </div>
+                      </div>
+                    </div>
+                {%- endcase -%}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- comment -%} Fallback 如果未添加任何自定义block，则读取商品自带描述 {%- endcomment -%}
+            {%- unless has_desc_blocks -%}
+              {% if product.description != blank %}
+                {{ product.description }}
+              {% else %}
+                {{ section.settings.custom_description }}
+              {% endif %}
+            {%- endunless -%}
+          </div>
         </div>
       </div>
     {% endif %}
@@ -216,7 +317,7 @@
       </div>
     {% endif %}
 
-    <!-- Specification Block (4-Column Metafield Layout with Customizable Background) -->
+    <!-- Specification Block -->
     {% if section.settings.show_specs %}
       {%- assign specs_metafield = product.metafields.custom.specification.value -%}
       <div class="pdt-block-item" id="pdt-specs-{{ section.id }}" data-tab-section>
@@ -249,7 +350,7 @@
       </div>
     {% endif %}
 
-    <!-- Download Block (Metafield) -->
+    <!-- Download Block -->
     {% if section.settings.show_download %}
       {%- assign download_metafield = product.metafields.custom.download.value -%}
       <div class="pdt-block-item" id="pdt-download-{{ section.id }}" data-tab-section>
@@ -410,7 +511,7 @@
     {
       "type": "richtext",
       "id": "custom_description",
-      "label": "Custom Description (If Product Has No Description)",
+      "label": "Custom Description Fallback",
       "default": "<p>Detailed description about your product goes here...</p>"
     },
     {
@@ -471,12 +572,12 @@
     },
     {
       "type": "header",
-      "content": "download Tab Settings (Metafield)"
+      "content": "Download Tab Settings (Metafield)"
     },
     {
       "type": "checkbox",
       "id": "show_download",
-      "label": "Show download Tab",
+      "label": "Show Download Tab",
       "default": true
     },
     {
@@ -490,6 +591,70 @@
       "id": "download_fallback_text",
       "label": "Fallback Text (If Metafield is Empty)",
       "default": "No download files."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "description_richtext",
+      "name": "Rich Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>Add rich text content here.</p>"
+        }
+      ]
+    },
+    {
+      "type": "description_image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    },
+    {
+      "type": "description_iwt",
+      "name": "Image with Text",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "layout",
+          "label": "Desktop Image Placement",
+          "default": "left",
+          "options": [
+            {
+              "value": "left",
+              "label": "Image on left"
+            },
+            {
+              "value": "right",
+              "label": "Image on right"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Image with text heading"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Description",
+          "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+        }
+      ]
     }
   ],
   "presets": [
