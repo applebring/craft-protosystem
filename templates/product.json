@@ -142,7 +142,9 @@
     "desc_richtext_1": {
       "type": "description_richtext",
       "settings": {
-        "content": "<p>这里是自定义的富文本描述内容，您可以随时在后台调整文字排版和样式。</p>"
+        "bg_color": "#ECEBED",
+        "padding": "20px 20px 20px 20px",
+        "content": "<h5>Designed Around Real Listening</h5><p>Music is more than detail alone. It is timing, space, dynamics and emotion working together as one.The ELEGAN 1 has been voiced to reproduce recordings with natural balance and long-term listenability rather than artificial excitement.Voices retain warmth and texture, instruments occupy clearly defined positions within the soundstage, and subtle musical details emerge effortlessly without becoming analytical or fatiguing.This is a loudspeaker that rewards extended listening sessions, revealing more of every performance without ever demanding attention to itself.</p>"
       }
     }
   },

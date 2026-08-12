@@ -1,6 +1,6 @@
 {%- comment -%}
   Section: Product Detail Tabs & Dynamic Scroll
-  Description: Sticky/Static tabs navigation linking to product description (with custom blocks), features, specifications, and download.
+  Description: Sticky/Static tabs navigation linking to product description (with custom background & padding blocks), features, specifications, and download.
 {%- endcomment -%}
 
 <style>
@@ -100,11 +100,17 @@
     color: #4a4a4a;
   }
 
-  /* Description Custom Blocks Styles */
+  /* Description Custom Blocks Container & Wrapper Styles */
   .pdt-desc-blocks {
     display: flex;
     flex-direction: column;
     gap: 24px;
+  }
+
+  .pdt-desc-block-item {
+    background-color: var(--block-bg, transparent);
+    padding: var(--block-padding, 0px);
+    border-radius: var(--block-radius, 0px);
   }
 
   .pdt-desc-richtext {
@@ -113,7 +119,6 @@
 
   .pdt-desc-image {
     width: 100%;
-    border-radius: 8px;
     overflow: hidden;
   }
 
@@ -121,6 +126,7 @@
     width: 100%;
     height: auto;
     display: block;
+    border-radius: inherit;
   }
 
   .pdt-image-with-text {
@@ -131,7 +137,6 @@
 
   .pdt-iwt-image {
     flex: 1;
-    border-radius: 8px;
     overflow: hidden;
   }
 
@@ -249,7 +254,7 @@
 
   <!-- Content Section Body -->
   <div class="page-width pdt-content-wrapper">
-    <!-- Description Block (With Custom Blocks Support) -->
+    <!-- Description Block (With Custom Blocks Support, Background & Padding) -->
     {% if section.settings.show_description %}
       <div class="pdt-block-item" id="pdt-description-{{ section.id }}" data-tab-section>
         <h3 class="pdt-block-title">{{ section.settings.tab_desc_title }}</h3>
@@ -259,38 +264,42 @@
             {%- for block in section.blocks -%}
               {%- if block.type == 'description_richtext' or block.type == 'description_image' or block.type == 'description_iwt' -%}
                 {%- assign has_desc_blocks = true -%}
-                {%- case block.type -%}
-                  {%- when 'description_richtext' -%}
-                    <div class="pdt-desc-richtext" {{ block.shopify_attributes }}>
-                      {{ block.settings.content }}
-                    </div>
-                  {%- when 'description_image' -%}
-                    <div class="pdt-desc-image" {{ block.shopify_attributes }}>
-                      {%- if block.settings.image != blank -%}
-                        <img src="{{ block.settings.image | image_url: width: 1200 }}" alt="{{ block.settings.image.alt | escape }}" loading="lazy" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}">
-                      {%- else -%}
-                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                      {%- endif -%}
-                    </div>
-                  {%- when 'description_iwt' -%}
-                    <div class="pdt-image-with-text" style="flex-direction: {% if block.settings.layout == 'right' %}row-reverse{% else %}row{% endif %};" {{ block.shopify_attributes }}>
-                      <div class="pdt-iwt-image">
+                
+                <div class="pdt-desc-block-item" style="--block-bg: {{ block.settings.bg_color | default: 'transparent' }}; --block-padding: {{ block.settings.padding | default: '0px' }}; --block-radius: {{ block.settings.border_radius | default: '0px' }};" {{ block.shopify_attributes }}>
+                  {%- case block.type -%}
+                    {%- when 'description_richtext' -%}
+                      <div class="pdt-desc-richtext">
+                        {{ block.settings.content }}
+                      </div>
+                    {%- when 'description_image' -%}
+                      <div class="pdt-desc-image">
                         {%- if block.settings.image != blank -%}
-                          <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.image.alt | escape }}" loading="lazy" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}">
+                          <img src="{{ block.settings.image | image_url: width: 1200 }}" alt="{{ block.settings.image.alt | escape }}" loading="lazy" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}">
                         {%- else -%}
                           {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
                         {%- endif -%}
                       </div>
-                      <div class="pdt-iwt-content">
-                        {%- if block.settings.title != blank -%}
-                          <h4 class="pdt-iwt-title">{{ block.settings.title }}</h4>
-                        {%- endif -%}
-                        <div class="pdt-iwt-text">
-                          {{ block.settings.text }}
+                    {%- when 'description_iwt' -%}
+                      <div class="pdt-image-with-text" style="flex-direction: {% if block.settings.layout == 'right' %}row-reverse{% else %}row{% endif %};">
+                        <div class="pdt-iwt-image">
+                          {%- if block.settings.image != blank -%}
+                            <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.image.alt | escape }}" loading="lazy" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}">
+                          {%- else -%}
+                            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                          {%- endif -%}
+                        </div>
+                        <div class="pdt-iwt-content">
+                          {%- if block.settings.title != blank -%}
+                            <h4 class="pdt-iwt-title">{{ block.settings.title }}</h4>
+                          {%- endif -%}
+                          <div class="pdt-iwt-text">
+                            {{ block.settings.text }}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                {%- endcase -%}
+                  {%- endcase -%}
+                </div>
+
               {%- endif -%}
             {%- endfor -%}
 
@@ -603,6 +612,28 @@
           "id": "content",
           "label": "Content",
           "default": "<p>Add rich text content here.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Style Customization"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background Color",
+          "default": "transparent"
+        },
+        {
+          "type": "text",
+          "id": "padding",
+          "label": "Padding (e.g. 20px or 20px 30px)",
+          "default": "0px"
+        },
+        {
+          "type": "text",
+          "id": "border_radius",
+          "label": "Border Radius (e.g. 8px)",
+          "default": "0px"
         }
       ]
     },
@@ -614,6 +645,28 @@
           "type": "image_picker",
           "id": "image",
           "label": "Image"
+        },
+        {
+          "type": "header",
+          "content": "Style Customization"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background Color",
+          "default": "transparent"
+        },
+        {
+          "type": "text",
+          "id": "padding",
+          "label": "Padding (e.g. 20px)",
+          "default": "0px"
+        },
+        {
+          "type": "text",
+          "id": "border_radius",
+          "label": "Border Radius (e.g. 8px)",
+          "default": "0px"
         }
       ]
     },
@@ -652,7 +705,29 @@
           "type": "richtext",
           "id": "text",
           "label": "Description",
-          "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+          "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Style Customization"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background Color",
+          "default": "transparent"
+        },
+        {
+          "type": "text",
+          "id": "padding",
+          "label": "Padding (e.g. 20px)",
+          "default": "0px"
+        },
+        {
+          "type": "text",
+          "id": "border_radius",
+          "label": "Border Radius (e.g. 8px)",
+          "default": "0px"
         }
       ]
     }
