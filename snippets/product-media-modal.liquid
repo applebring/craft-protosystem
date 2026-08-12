@@ -41,16 +41,11 @@
     position: relative;
   }
 
-  .product-media-modal common-swiper {
+  .product-media-modal .swiper {
     width: 100%;
     height: 100%;
     display: block;
     position: relative;
-  }
-
-  .product-media-modal .swiper {
-    width: 100%;
-    height: 100%;
   }
 
   .product-media-modal .swiper-slide {
@@ -157,60 +152,64 @@
       aria-label="{{ 'products.modal.label' | t }}"
       tabindex="0"
     >
-      <common-swiper mode="media">
-        <script type="application/json" data-swiper-config>
-          {
-            "slidesPerView": 1,
-            "spaceBetween": 0,
-            "loop": false,
-            "watchOverflow": true,
-            "observer": true,
-            "observeParents": true,
-            "speed": 600,
-            "simulateTouch": true,
-            "grabCursor": true,
-            "navigation": {
-              "nextEl": ".swiper-button-next",
-              "prevEl": ".swiper-button-prev"
-            },
-            "pagination": {
-              "el": ".swiper-pagination",
-              "clickable": true
-            }
-          }
-        </script>
+      <!-- 移除自定义组件标签，直接使用标准的 Swiper HTML 结构 -->
+      <div class="swiper product-media-swiper-{{ section.id }}">
+        <div class="swiper-wrapper">
+          {%- if product.selected_or_first_available_variant.featured_media != null -%}
+            {%- assign media = product.selected_or_first_available_variant.featured_media -%}
+            <div class="swiper-slide" data-media-id="{{ media.id }}">
+              {%- render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: section.settings.hide_variants -%}
+            </div>
+          {%- endif -%}
 
-        <div class="swiper">
-          <div class="swiper-wrapper">
-            {%- if product.selected_or_first_available_variant.featured_media != null -%}
-              {%- assign media = product.selected_or_first_available_variant.featured_media -%}
+          {%- for media in product.media -%}
+            {%- liquid
+              if section.settings.hide_variants and variant_images contains media.src or variant_images contains media.id
+                assign variant_image = true
+              else
+                assign variant_image = false
+              endif
+            -%}
+            
+            {%- unless media.id == product.selected_or_first_available_variant.featured_media.id -%}
               <div class="swiper-slide" data-media-id="{{ media.id }}">
-                {%- render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: section.settings.hide_variants -%}
+                {%- render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: variant_image -%}
               </div>
-            {%- endif -%}
-
-            {%- for media in product.media -%}
-              {%- liquid
-                if section.settings.hide_variants and variant_images contains media.src or variant_images contains media.id
-                  assign variant_image = true
-                else
-                  assign variant_image = false
-                endif
-              -%}
-              
-              {%- unless media.id == product.selected_or_first_available_variant.featured_media.id -%}
-                <div class="swiper-slide" data-media-id="{{ media.id }}">
-                  {%- render 'product-media', media: media, loop: section.settings.enable_video_looping, variant_image: variant_image -%}
-                </div>
-              {%- endunless -%}
-            {%- endfor -%}
-          </div>
+            {%- endunless -%}
+          {%- endfor -%}
         </div>
 
         <div class="swiper-button-prev"></div>
         <div class="swiper-button-next"></div>
         <div class="swiper-pagination"></div>
-      </common-swiper>
+      </div>
     </div>
   </div>
 </product-modal>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const modalSwiperEl = document.querySelector('.product-media-swiper-{{ section.id }}');
+    if (modalSwiperEl && typeof Swiper !== 'undefined') {
+      new Swiper(modalSwiperEl, {
+        slidesPerView: 1,
+        spaceBetween: 0,
+        loop: false,
+        watchOverflow: true,
+        observer: true,
+        observeParents: true,
+        speed: 600,
+        simulateTouch: true,
+        grabCursor: true,
+        navigation: {
+          nextEl: modalSwiperEl.querySelector('.swiper-button-next'),
+          prevEl: modalSwiperEl.querySelector('.swiper-button-prev'),
+        },
+        pagination: {
+          el: modalSwiperEl.querySelector('.swiper-pagination'),
+          clickable: true,
+        },
+      });
+    }
+  });
+</script>
