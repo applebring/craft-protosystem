@@ -643,270 +643,271 @@ class ModalDialog extends HTMLElement {
 customElements.define('modal-dialog', ModalDialog);
 
 class CommonSwiper extends HTMLElement {
-  static config = () => ({
-    slidesPerView: 1,
-    spaceBetween: 10,
-    breakpoints: {
-      768: {
-        spaceBetween: 24,
-      },
-      1240: {
-        spaceBetween: 32,
-      },
-    },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-  });
+      static config = () => ({
+        slidesPerView: 1,
+        spaceBetween: 0,
+        breakpoints: {
+          768: { spaceBetween: 0 },
+          1240: { spaceBetween: 0 },
+        },
+      });
 
-  constructor() {
-    super();
-    this.onlyMobile = this.hasAttribute('only-mobile');
-    this.onlyDesktop = this.hasAttribute('only-desktop');
-    this.initAttempts = 0;
-  }
-
-  connectedCallback() {
-    if (this.onlyMobile && window.innerWidth > 768) return;
-    if (this.onlyDesktop && window.innerWidth < 768) return;
-
-    this.container = this.querySelector('.swiper');
-    if (!this.container) return;
-    if (!this.querySelectorAll('.swiper-slide')?.length) return;
-
-    this.isMediaMode = this.getAttribute('mode') === 'media';
-    if (this.isMediaMode) {
-      this.initMediaMode();
-    }
-
-    this.waitForSwiper();
-  }
-
-  disconnectedCallback() {
-    if (this.swiper) {
-      this.swiper.destroy(true, true);
-    }
-    if (this.task) {
-      clearTimeout(this.task);
-    }
-  }
-
-  initMediaMode() {
-    this.medias = [];
-
-    this.querySelectorAll('.swiper-slide').forEach((slide) => {
-      const media = {};
-      const video = slide.querySelector('video');
-      const img = slide.querySelector('img');
-
-      if (video) {
-        media.type = 'video';
-        media.element = video;
-        this.hasVideo = true;
-
-        video.addEventListener('ended', () => {
-          this.waiting = false;
-          if (this.swiper) this.swiper.slideNext();
-        });
-      } else if (img) {
-        media.type = 'image';
-        media.element = img;
+      constructor() {
+        super();
+        this.only_mobile = this.hasAttribute('only-mobile');
+        this.only_desktop = this.hasAttribute('only-desktop');
       }
 
-      this.medias.push(media);
-    });
-  }
-
-  waitForSwiper() {
-    if (typeof window.Swiper === 'undefined') {
-      this.initAttempts += 1;
-      if (this.initAttempts <= 40) {
-        window.setTimeout(() => this.waitForSwiper(), 100);
-      }
-      return;
-    }
-
-    this.initConfig();
-  }
-
-  initConfig() {
-    this.config = this.getConfig();
-
-    if (this.hasVideo) delete this.config.autoplay;
-
-    if (this.hasAttribute('thumbnail')) {
-      this.config.thumbs = {};
-
-      const thumbnailElement = document.querySelector(this.getAttribute('thumbnail'));
-      if (!thumbnailElement) {
-        this.initSwiper();
-        return;
+      connectedCallback() {
+        // 由于脚本在 body 末尾加载，connectedCallback 触发时子树一定解析完成。
+        // 但如果 custom element 是后续动态插入到 DOM 的（比如 section reorder / Ajax 注入），
+        // 仍用 setTimeout 0 推到下一宏任务，确保插入的子节点全部就绪。
+        setTimeout(() => this.init(), 0);
       }
 
-      if (
-        (thumbnailElement.hasAttribute('only-mobile') && window.innerWidth > 768) ||
-        (thumbnailElement.hasAttribute('only-desktop') && window.innerWidth < 768)
-      ) {
-        this.initSwiper();
-        return;
+      init() {
+        // 视口尺寸条件
+        if (this.only_mobile && window.innerWidth > 768) return;
+        if (this.only_desktop && window.innerWidth < 768) return;
+
+        // 必备 DOM
+        this.container = this.querySelector('.swiper');
+        const slides = this.querySelectorAll('.swiper-slide');
+        if (!this.container || !slides?.length) return;
+
+        // 收集媒体信息（image / video）
+        this.isMediaMode = this.getAttribute('mode') === 'media';
+        if (this.isMediaMode) {
+          this.medias = [];
+          slides.forEach((slide) => {
+            const media = {};
+            if (slide.querySelector('video')) {
+              media.type = 'video';
+              media.element = slide.querySelector('video');
+              this.hasVideo = true;
+              media.element.addEventListener('ended', () => {
+                this.waiting = false;
+                this.swiper && this.swiper.slideNext();
+              });
+            } else if (slide.querySelector('img')) {
+              media.type = 'image';
+              media.element = slide.querySelector('img');
+            }
+            this.medias.push(media);
+          });
+        }
+
+        this.initConfig();
       }
 
-      if (thumbnailElement.swiper) {
-        this.thumbnailSwiper = thumbnailElement.swiper;
-        this.config.thumbs.swiper = thumbnailElement.swiper;
-        this.initSwiper();
-      } else {
-        thumbnailElement.addEventListener('swiper-init', ({ detail: swiper }) => {
-          this.thumbnailSwiper = swiper;
-          this.config.thumbs.swiper = swiper;
+      initConfig() {
+        this.config = this.getConfig();
+        if (this.hasVideo) delete this.config.autoplay;
+
+        if (this.hasAttribute('thumbnail')) {
+          this.config.thumbs = {};
+          const thumbnailElement = document.querySelector(this.getAttribute('thumbnail'));
+          if (!thumbnailElement) {
+            this.initSwiper();
+            return;
+          }
+          if (
+            (thumbnailElement.hasAttribute('only-mobile') && window.innerWidth > 768) ||
+            (thumbnailElement.hasAttribute('only-desktop') && window.innerWidth < 768)
+          ) {
+            this.initSwiper();
+            return;
+          }
+          const initWithThumbs = (swiper) => {
+            this.thumbnailSwiper = swiper;
+            this.config.thumbs.swiper = swiper;
+            this.initSwiper();
+          };
+          if (thumbnailElement.swiper) initWithThumbs(thumbnailElement.swiper);
+          else thumbnailElement.addEventListener('swiper-init', ({ detail }) => initWithThumbs(detail));
+        } else {
           this.initSwiper();
-        });
+        }
       }
-    } else {
-      this.initSwiper();
-    }
-  }
 
-  initSwiper() {
-    if (!this.config.on) this.config.on = {};
+      initSwiper() {
+        if (!this.config.on) this.config.on = {};
 
-    if (!this.config.on.init) {
-      this.config.on.init = (swiper) => {
-        this.dispatchEvent(new CustomEvent('swiper-init', { detail: swiper }));
+        if (!this.config.on.init) {
+          this.config.on.init = (swiper) => {
+            this.dispatchEvent(new CustomEvent('swiper-init', { detail: swiper }));
+          };
+        }
 
-        if (this.config.autoplay && this.hasAttribute('mouse-stop')) {
+        this.swiper = new Swiper(this.container, this.config);
+
+        // 同步启动 autoplay（Swiper 11 在元素曾被隐藏/AOS 动画时可能延迟启动）
+        if (this.config.autoplay && this.swiper.autoplay) {
+          this.swiper.autoplay.start();
+          // 默认启用：鼠标悬停暂停轮播，移开继续
           this.mouseHandler();
         }
-      };
-    }
 
-    this.swiper = new Swiper(this.container, this.config);
+        // 第一阶段刷新：布局稳定后重新同步尺寸与分页
+        setTimeout(() => this.refreshSwiper(), 60);
 
-    if (this.hasVideo) {
-      this.startAutoPlay();
-    }
-
-    if (window.innerWidth < 768) return;
-
-    const leftSwiperEl = this.querySelector('.left-swiper');
-    const rightSwiperEl = this.querySelector('.right-swiper');
-
-    if (leftSwiperEl && rightSwiperEl) {
-      this.leftSwiper = new Swiper(leftSwiperEl, {
-        loop: true,
-        simulateTouch: false,
-      });
-
-      this.rightSwiper = new Swiper(rightSwiperEl, {
-        loop: true,
-        simulateTouch: false,
-      });
-
-      this.swiper.controller.control = [this.leftSwiper, this.rightSwiper];
-    }
-  }
-
-  startAutoPlay() {
-    this.waiting = false;
-    this.task = null;
-
-    const autoPlayNext = () => {
-      if (this.waiting) return;
-
-      clearTimeout(this.task);
-      this.waiting = true;
-
-      const media = this.medias[this.swiper.activeIndex];
-      if (!media) return;
-
-      if (media.type === 'video') {
-        if (media.element.ended) {
-          media.element.currentTime = 0;
+        // 第二阶段刷新：所有 slide 图片加载完，确保 slide 宽高计算无误后再次 refresh 并重启 autoplay
+        const imgs = this.querySelectorAll('.swiper-slide img');
+        if (imgs?.length) {
+          let loaded = 0;
+          const onImgDone = () => {
+            loaded += 1;
+            if (loaded >= imgs.length) {
+              this.refreshSwiper();
+              if (this.config.autoplay && this.swiper.autoplay) {
+                this.swiper.autoplay.stop();
+                this.swiper.autoplay.start();
+              }
+            }
+          };
+          imgs.forEach((img) => {
+            if (img.complete) onImgDone();
+            else {
+              img.addEventListener('load', onImgDone, { once: true });
+              img.addEventListener('error', onImgDone, { once: true });
+            }
+          });
         }
-        media.element.play();
-      } else {
-        this.task = setTimeout(() => {
-          this.task = null;
-          this.waiting = false;
-          this.swiper.slideNext();
-        }, 3000);
-      }
-    };
 
-    this.swiper.on('slideChange', () => {
-      setTimeout(() => {
+        if (this.hasVideo) this.startAutoPlay();
+
+        if (window.innerWidth >= 768) {
+          if (this.querySelector('.left-swiper') && this.querySelector('.right-swiper')) {
+            this.leftSwiper = new Swiper(this.querySelector('.left-swiper'), {
+              loop: true,
+              simulateTouch: false,
+            });
+            this.rightSwiper = new Swiper(this.querySelector('.right-swiper'), {
+              loop: true,
+              simulateTouch: false,
+            });
+            this.swiper.controller.control = [this.leftSwiper, this.rightSwiper];
+          }
+        }
+      }
+
+      refreshSwiper() {
+        if (!this.swiper) return;
+        this.swiper.update();
+        if (this.swiper.pagination) {
+          this.swiper.pagination.render();
+          this.swiper.pagination.update();
+        }
+      }
+
+      startAutoPlay() {
+        this.waiting = false;
+        this.task = null;
+
+        const autoPlayNext = () => {
+          if (this.waiting) return;
+          clearTimeout(this.task);
+          this.waiting = true;
+
+          const media = this.medias[this.swiper.activeIndex];
+          if (!media) return;
+
+          if (media.type === 'video') {
+            if (media.element.ended) media.element.currentTime = 0;
+            media.element.play();
+          } else {
+            this.task = setTimeout(() => {
+              this.task = null;
+              this.waiting = false;
+              this.swiper.slideNext();
+            }, 3000);
+          }
+        };
+
+        this.swiper.on('slideChange', () => setTimeout(autoPlayNext, 0));
         autoPlayNext();
-      }, 0);
-    });
+      }
 
-    autoPlayNext();
-  }
+      mouseHandler() {
+        this.container.addEventListener('mouseenter', () => this.swiper?.autoplay?.stop());
+        this.container.addEventListener('mouseleave', () => this.swiper?.autoplay?.start());
+      }
 
-  mouseHandler() {
-    this.container.addEventListener('mouseenter', () => {
-      if (this.swiper?.autoplay) this.swiper.autoplay.stop();
-    });
-
-    this.container.addEventListener('mouseleave', () => {
-      if (this.swiper?.autoplay) this.swiper.autoplay.start();
-    });
-  }
-
-  getConfig() {
-    let config = JSON.parse(this.querySelector('script[data-swiper-config]')?.textContent || null) || null;
-    config = config || CommonSwiper.config();
-
-    if (config?.on) {
-      config.on = this.formatFunction(config.on);
-    }
-
-    if (config?.breakpoints) {
-      for (let key in config.breakpoints) {
-        if (config.breakpoints[key]?.on) {
-          config.breakpoints[key].on = this.formatFunction(config.breakpoints[key].on);
+      getConfig() {
+        let config = null;
+        const cfgEl = this.querySelector('script[data-swiper-config]');
+        if (cfgEl?.textContent) {
+          try { config = JSON.parse(cfgEl.textContent); } catch (e) {
+            console.warn('[common-swiper] data-swiper-config JSON parse error:', e);
+            config = null;
+          }
         }
+        config = config || CommonSwiper.config();
+
+        if (config?.on) config.on = this.formatFunction(config.on);
+
+        if (config?.breakpoints) {
+          for (const key in config.breakpoints) {
+            if (config.breakpoints[key]?.on) {
+              config.breakpoints[key].on = this.formatFunction(config.breakpoints[key].on);
+            }
+          }
+        }
+
+        if (config.navigation) {
+          if (typeof config.navigation.nextEl === 'string') {
+            config.navigation.nextEl = this.querySelector(config.navigation.nextEl);
+          }
+          if (typeof config.navigation.prevEl === 'string') {
+            config.navigation.prevEl = this.querySelector(config.navigation.prevEl);
+          }
+        }
+
+        if (config.scrollbar && config.scrollbar.el) {
+          config.scrollbar.el = this.querySelector(config.scrollbar.el);
+        }
+
+        // Pagination：只有目标节点存在才注入；否则删除避免 Swiper 报错
+        const paginationEl = this.querySelector('.swiper-pagination');
+        if (paginationEl) {
+          config.pagination = {
+            el: paginationEl,
+            clickable: true,
+            dynamicBullets: false,
+            renderBullet: function (index, className) {
+              return '<span class="' + className + '"></span>';
+            },
+          };
+          // 兼容保留 data-swiper-config 里传入的 pagination 字段（如自定义 renderBullet）
+          const cfgPg = (config && config.pagination) || null;
+          if (cfgPg && typeof cfgPg === 'object') {
+            config.pagination = Object.assign({}, config.pagination, cfgPg);
+            if (typeof config.pagination.el === 'string') {
+              const bySel = this.querySelector(config.pagination.el);
+              if (bySel) config.pagination.el = bySel;
+            }
+          }
+        } else {
+          delete config.pagination;
+        }
+
+        return config;
+      }
+
+      formatFunction(oldOn) {
+        const newOn = {};
+        for (const key in oldOn) {
+          if (oldOn[key]) {
+            try { newOn[key] = new Function('return ' + oldOn[key])(); } catch (_) { /* ignore */ }
+          }
+        }
+        return newOn;
+      }
+
+      disconnectedCallback() {
+        this.swiper?.destroy();
       }
     }
-
-  if (config.navigation) {
-      if (typeof config.navigation.nextEl === 'string') {
-        config.navigation.nextEl = this.querySelector(config.navigation.nextEl);
-      }
-      if (typeof config.navigation.prevEl === 'string') {
-        config.navigation.prevEl = this.querySelector(config.navigation.prevEl);
-      }
-    }
-
-    if (config.scrollbar && config.scrollbar.el) {
-      config.scrollbar.el = this.querySelector(config.scrollbar.el);
-    }
-
-    const paginationEl = this.querySelector('.swiper-pagination') || this.closest('.swiper-father')?.querySelector('.swiper-pagination');
-    if (paginationEl) {
-      config.pagination = {
-        el: paginationEl,
-        clickable: true,
-      };
-    } else {
-      delete config.pagination;
-    }
-
-    return config;
-  }
-
-  formatFunction(oldOn) {
-    const newOn = {};
-
-    for (let key in oldOn) {
-      if (oldOn[key]) {
-        newOn[key] = new Function('return ' + oldOn[key])();
-      }
-    }
-
-    return newOn;
-  }
-}
 
 if (!customElements.get('common-swiper')) {
   customElements.define('common-swiper', CommonSwiper);

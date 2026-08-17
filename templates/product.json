@@ -125,32 +125,42 @@
     },
     "product_detail_tabs": {
       "type": "product-detail-tabs",
-  "settings": {
-    "enable_sticky": false,
-    "show_description": true,
-    "tab_desc_title": "Description",
-    "custom_description": "",
-    "show_features": true,
-    "tab_features_title": "Features",
-    "features_content": "<ul><li>High durability material</li><li>Ergonomic and compact design</li><li>Lightweight and portable</li></ul>",
-    "show_specs": true,
-    "tab_specs_title": "Specifications",
-    "show_download": true,
-    "tab_download_title": "Download"
-  },
-  "blocks": {
-    "desc_richtext_1": {
-      "type": "description_richtext",
       "settings": {
-        "bg_color": "#ECEBED",
-        "padding": "20px 20px 20px 20px",
-        "content": "<h5>Designed Around Real Listening</h5><p>Music is more than detail alone. It is timing, space, dynamics and emotion working together as one.The ELEGAN 1 has been voiced to reproduce recordings with natural balance and long-term listenability rather than artificial excitement.Voices retain warmth and texture, instruments occupy clearly defined positions within the soundstage, and subtle musical details emerge effortlessly without becoming analytical or fatiguing.This is a loudspeaker that rewards extended listening sessions, revealing more of every performance without ever demanding attention to itself.</p>"
-      }
-    }
-  },
-  "block_order": [
-    "desc_richtext_1"
-  ]
+        "enable_sticky": false,
+        "show_description": true,
+        "tab_desc_title": "Description",
+        "custom_description": "",
+        "show_features": true,
+        "tab_features_title": "Features",
+        "features_content": "<ul><li>High durability material</li><li>Ergonomic and compact design</li><li>Lightweight and portable</li></ul>",
+        "show_specs": true,
+        "tab_specs_title": "Specifications",
+        "show_download": true,
+        "tab_download_title": "Download"
+      },
+      "blocks": {
+        "desc_richtext_1": {
+          "type": "description_richtext",
+          "settings": {
+            "bg_color": "#ECEBED",
+            "padding": "20px 20px 20px 20px",
+            "content": "<h5>Designed Around Real Listening</h5><p>Music is more than detail alone. It is timing, space, dynamics and emotion working together as one.The ELEGAN 1 has been voiced to reproduce recordings with natural balance and long-term listenability rather than artificial excitement.Voices retain warmth and texture, instruments occupy clearly defined positions within the soundstage, and subtle musical details emerge effortlessly without becoming analytical or fatiguing.This is a loudspeaker that rewards extended listening sessions, revealing more of every performance without ever demanding attention to itself.</p>"
+          }
+        },
+        "description_image": {
+          "type": "description_image",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/elegan1_1.jpg",
+            "image_position": "left",
+            "image_size": "medium",
+            "padding": "20px 20px 20px 20px"
+          }
+        }
+      },
+      "block_order": [
+        "desc_richtext_1",
+        "description_image"
+      ]
     },
     "related-products": {
       "type": "related-products",
