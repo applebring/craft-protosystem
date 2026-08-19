@@ -185,14 +185,14 @@
                   {%- if menu != blank -%}
                     {%- for link in menu.links -%}
                       <div
-                        class="footer-block grid__item footer-block--menu{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                        class="active footer-block grid__item footer-block--menu{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
                         {{ block.shopify_attributes }}
                         {% if settings.animations_reveal_on_scroll %}
                           data-cascade
                           style="--animation-order: {{ forloop.index }};"
                         {% endif %}
                       >
-                        <button type="button" class="footer-block__heading-button" aria-expanded="false">
+                        <button type="button" class="footer-block__heading-button" aria-expanded="true">
                           <span class="footer-block__heading inline-richtext">
                             {{ link.title | escape }}
                           </span>
@@ -218,14 +218,14 @@
                     {%- endfor -%}
                   {%- endif -%}
                   <div
-                        class="footer-block grid__item footer-block--menu{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                        class="active footer-block grid__item footer-block--menu{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
                         {{ block.shopify_attributes }}
                         {% if settings.animations_reveal_on_scroll %}
                           data-cascade
                           style="--animation-order: {{ forloop.index }};"
                         {% endif %}
                       >
-                    <button type="button" class="footer-block__heading-button" aria-expanded="false">
+                    <button type="button" class="footer-block__heading-button" aria-expanded="true">
                         <span class="footer-block__heading inline-richtext">Where We Are</span>
                         <span class="icon-accordion"></span>
                     </button>
