@@ -36,7 +36,93 @@
     margin-top: 0.5rem;
   }
 
-  @media screen and (min-width: 750px) {
+  /* 移动端与平板端手风琴样式（屏幕小于1024px，统一为单列并启用手风琴效果） */
+  @media screen and (max-width: 1023px) {
+    .footer__blocks-wrapper.footer-custom-columns {
+      display: block;
+    }
+    .footer__blocks-wrapper.footer-custom-columns .footer-block {
+      width: 100%;
+      flex: none;
+      margin-bottom: 0;
+      border-bottom: 1px solid rgba(var(--color-foreground), 0.08);
+    }
+    .footer-block--menu .footer-block__heading-button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 1.2rem 0;
+      text-align: left;
+      cursor: pointer;
+      color: inherit;
+    }
+    .footer-block--menu .footer-block__heading-button .icon-accordion {
+      width: 1.2rem;
+      height: 1.2rem;
+      position: relative;
+      display: inline-block;
+      flex-shrink: 0;
+      margin-left: 1rem;
+    }
+    .footer-block--menu .footer-block__heading-button .icon-accordion::before,
+    .footer-block--menu .footer-block__heading-button .icon-accordion::after {
+      content: "";
+      position: absolute;
+      background-color: currentColor;
+      transition: transform 0.2s ease;
+    }
+    /* 加号横竖线 */
+    .footer-block--menu .footer-block__heading-button .icon-accordion::before {
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      transform: translateY(-50%);
+    }
+    .footer-block--menu .footer-block__heading-button .icon-accordion::after {
+      top: 0;
+      left: 50%;
+      width: 2px;
+      height: 100%;
+      transform: translateX(-50%);
+    }
+    /* 展开状态变成减号：隐藏竖线 */
+    .footer-block--menu.active .footer-block__heading-button .icon-accordion::after {
+      transform: translateX(-50%) rotate(90deg);
+      opacity: 0;
+    }
+
+    /* 使用性能更优的 grid-template-rows 实现丝滑动画，避免卡顿 */
+    .footer-block--menu .footer-block__details-content,
+    .footer-block--menu .child-menu {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.3s ease-out, padding 0.3s ease-out;
+      margin-top: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      overflow: hidden;
+    }
+    
+    .footer-block--menu .footer-block__details-content > *,
+    .footer-block--menu .child-menu > * {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .footer-block--menu.active .footer-block__details-content,
+    .footer-block--menu.active .child-menu {
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.3s ease-in, padding 0.3s ease-in;
+      padding-bottom: 1rem;
+    }
+  }
+
+  /* 桌面端还原原有样式（屏幕大于等于1024px） */
+  @media screen and (min-width: 1024px) {
     .footer {
       margin-top: {{ section.settings.margin_top }}px;
     }
@@ -44,6 +130,20 @@
     .section-{{ section.id }}-padding {
       padding-top: {{ section.settings.padding_top }}px;
       padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+
+    .footer-block--menu .footer-block__heading-button {
+      background: none;
+      border: none;
+      padding: 0;
+      text-align: left;
+      cursor: default;
+      display: block;
+      width: 100%;
+      color: rgb(var(--color-foreground));
+    }
+    .footer-block--menu .footer-block__heading-button .icon-accordion {
+      display: none;
     }
   }
 {%- endstyle -%}
@@ -92,21 +192,26 @@
                           style="--animation-order: {{ forloop.index }};"
                         {% endif %}
                       >
-                        <h2 class="footer-block__heading inline-richtext">
-                          <a href="{{ link.url }}" class="link link--text">{{ link.title | escape }}</a>
-                        </h2>
+                        <button type="button" class="footer-block__heading-button" aria-expanded="false">
+                          <span class="footer-block__heading inline-richtext">
+                            {{ link.title | escape }}
+                          </span>
+                          <span class="icon-accordion"></span>
+                        </button>
                         {%- if link.links != blank -%}
                           <ul class="footer-block__details-content list-unstyled child-menu">
-                            {%- for child_link in link.links -%}
-                              <li>
-                                <a
-                                  href="{{ child_link.url }}"
-                                  class="link link--text list-menu__item list-menu__item--link{% if child_link.active %} list-menu__item--active{% endif %}"
-                                >
-                                  {{ child_link.title | escape }}
-                                </a>
-                              </li>
-                            {%- endfor -%}
+                            <div>
+                              {%- for child_link in link.links -%}
+                                <li>
+                                  <a
+                                    href="{{ child_link.url }}"
+                                    class="link link--text list-menu__item list-menu__item--link{% if child_link.active %} list-menu__item--active{% endif %}"
+                                  >
+                                    {{ child_link.title | escape }}
+                                  </a>
+                                </li>
+                              {%- endfor -%}
+                            </div>
                           </ul>
                         {%- endif -%}
                       </div>
@@ -120,10 +225,11 @@
                           style="--animation-order: {{ forloop.index }};"
                         {% endif %}
                       >
-                      <h2 class="footer-block__heading inline-richtext">
-                          <a href="" class="link link--text">Where We Are</a>
-                        </h2>
-                      </div>
+                    <button type="button" class="footer-block__heading-button" aria-expanded="false">
+                        <span class="footer-block__heading inline-richtext">Where We Are</span>
+                        <span class="icon-accordion"></span>
+                    </button>
+                  </div>
                 {%- else -%}
                   <div
                     class="footer-block grid__item{% if block.type == 'link_list' %} footer-block--menu{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
@@ -141,7 +247,7 @@
                           <h2 class="footer-block__heading inline-richtext">{{- block.settings.heading -}}</h2>
                         {%- endif -%}
                         <div class="footer-block__details-content rte">
-                          {{ block.settings.subtext }}
+                          <div>{{ block.settings.subtext }}</div>
                         </div>
                       {%- when 'brand_information' -%}
                         <div class="footer-block__brand-info">
@@ -176,24 +282,26 @@
                         </div>
                       {%- when 'image' -%}
                         <div class="footer-block__details-content footer-block-image {{ block.settings.alignment }}">
-                          {%- if block.settings.image != blank -%}
-                            {%- assign image_size_2x = block.settings.image_width | times: 2 | at_most: 5760 -%}
-                            <div
-                              class="footer-block__image-wrapper"
-                              style="max-width: min(100%, {{ block.settings.image_width }}px);"
-                            >
-                              <img
-                                srcset="{{ block.settings.image | image_url: width: block.settings.image_width }}, {{ block.settings.image | image_url: width: image_size_2x }} 2x"
-                                src="{{ block.settings.image | image_url: width: 760 }}"
-                                alt="{{ block.settings.image.alt | escape }}"
-                                loading="lazy"
-                                width="{{ block.settings.image.width }}"
-                                height="{{ block.settings.image.height }}"
+                          <div>
+                            {%- if block.settings.image != blank -%}
+                              {%- assign image_size_2x = block.settings.image_width | times: 2 | at_most: 5760 -%}
+                              <div
+                                class="footer-block__image-wrapper"
+                                style="max-width: min(100%, {{ block.settings.image_width }}px);"
                               >
-                            </div>
-                          {%- else -%}
-                            {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
-                          {%- endif -%}
+                                <img
+                                  srcset="{{ block.settings.image | image_url: width: block.settings.image_width }}, {{ block.settings.image | image_url: width: image_size_2x }} 2x"
+                                  src="{{ block.settings.image | image_url: width: 760 }}"
+                                  alt="{{ block.settings.image.alt | escape }}"
+                                  loading="lazy"
+                                  width="{{ block.settings.image.width }}"
+                                  height="{{ block.settings.image.height }}"
+                                >
+                              </div>
+                            {%- else -%}
+                              {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
+                            {%- endif -%}
+                          </div>
                         </div>
                     {%- endcase -%}
                   </div>
@@ -363,6 +471,24 @@
     </div>
   </div>
 </footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const accordionButtons = document.querySelectorAll('.footer-block--menu .footer-block__heading-button');
+    
+    accordionButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        if (window.innerWidth < 1024) {
+          const parentBlock = this.closest('.footer-block--menu');
+          const isExpanded = this.getAttribute('aria-expanded') === 'true';
+          
+          this.setAttribute('aria-expanded', !isExpanded);
+          parentBlock.classList.toggle('active');
+        }
+      });
+    });
+  });
+</script>
 
 {% schema %}
 {
@@ -558,7 +684,7 @@
       "id": "padding_top",
       "min": 0,
       "max": 100,
-      "step": 4,
+      "step": 1,
       "unit": "px",
       "label": "t:sections.all.padding.padding_top",
       "default": 36
