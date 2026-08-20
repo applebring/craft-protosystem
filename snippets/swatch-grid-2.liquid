@@ -97,4 +97,13 @@
     		{{ product | json }}
   </script>
 </div>
-{%- endif -%}
+{%- endif -%}{%- comment -%}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: '{%- capture "form_class" %}'
+  to: "{%- capture form_class %}"
+  position: 236..261
+{%- endcomment -%}
