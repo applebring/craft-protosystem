@@ -1,0 +1,76 @@
+{% comment %}
+  Snippet: 单个产品卡片组件
+  接受参数: product (product object)
+{% endcomment %}
+
+<div class="product-card" data-product-card>
+  <!-- 产品图片区域 (支持 Hover 切换第二张图) -->
+  <a href="{{ product.url }}" class="product-card__media">
+    {% assign primary_image = product.featured_media %}
+    {% assign secondary_image = product.media[1] | default: primary_image %}
+
+    <img
+      src="{{ primary_image | image_url: width: 400 }}"
+      alt="{{ primary_image.alt | escape }}"
+      class="product-card__img product-card__img--primary"
+      loading="lazy"
+      data-primary-image
+    >
+    
+    {% if secondary_image and secondary_image != primary_image %}
+      <img
+        src="{{ secondary_image | image_url: width: 400 }}"
+        alt="{{ secondary_image.alt | escape }}"
+        class="product-card__img product-card__img--hover"
+        loading="lazy"
+      >
+    {% endif %}
+  </a>
+
+  <!-- 产品详细信息 -->
+  <div class="product-card__info">
+    <!-- 5星评价展示 -->
+    <div class="product-card__rating" title="5.0 out of 5 stars">
+      <span class="stars">★★★★★</span>
+      <span class="rating-score">5.0</span>
+    </div>
+
+    <!-- 产品标题 -->
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    <!-- 价格展示 -->
+    <div class="product-card__price">
+      {{ product.price | money }}
+    </div>
+
+    <!-- 规格切换按钮 (点击切换主图) -->
+    {% if product.has_only_default_variant == false %}
+      <div class="product-card__variants">
+        {% for option in product.options_with_values %}
+          <div class="variant-group">
+            {% for value in option.values %}
+              {% assign variant_image_url = '' %}
+              {% for variant in product.variants %}
+                {% if variant.title contains value and variant.featured_media %}
+                  {% assign variant_image_url = variant.featured_media | image_url: width: 400 %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+
+              <button
+                type="button"
+                class="variant-chip {% if forloop.first %}active{% endif %}"
+                data-variant-image="{{ variant_image_url }}"
+                data-variant-btn
+              >
+                {{ value }}
+              </button>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>

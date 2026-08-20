@@ -1,0 +1,299 @@
+{% comment %}
+  Section: 6列产品展示板块 (Product Showcase Grid - Multi-Collection & Manual Support)
+  包含: 双图悬停切换、标题、5星评价、规格点击切图、支持多系列聚合或手动选品
+{% endcomment %}
+
+<div class="showcase-section" id="showcase-{{ section.id }}">
+  <div class="showcase-container">
+    {% if section.settings.title != blank %}
+      <h2 class="showcase-title">{{ section.settings.title }}</h2>
+    {% endif %}
+
+    <div class="showcase-grid">
+      {%- comment -%} 确定数据来源与收集产品 {%- endcomment -%}
+      {% assign showcase_products = blank %}
+      
+      {% if section.settings.show_source == 'collections' %}
+        {%- comment -%} 多系列聚合：遍历选中的多个系列，将其产品合并输出 {%- endcomment -%}
+        {% if section.settings.collection_list != blank %}
+          {% capture collected_products_html %}
+            {% for collection_item in section.settings.collection_list %}
+              {% for product in collection_item.products %}
+                {% render 'sale-product-card', product: product %}
+              {% endfor %}
+            {% endfor %}
+          {% endcapture %}
+        {% endif %}
+      {% else %}
+        {%- comment -%} 手动选品 {%- endcomment -%}
+        {% if section.settings.product_list != blank %}
+          {% capture collected_products_html %}
+            {% for product in section.settings.product_list %}
+              {% render 'sale-product-card', product: product %}
+            {% endfor %}
+          {% endcapture %}
+        {% endif %}
+      {% endif %}
+      
+      {% if collected_products_html != blank and collected_products_html.strip != '' %}
+        {{ collected_products_html }}
+      {% else %}
+        <!-- 后台未配置或无产品时的占位图展示 -->
+        {% for i in (1..6) %}
+          <div class="product-card">
+            <div class="product-card__media placeholder-bg">
+              {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <div class="product-card__info">
+              <div class="product-card__rating"><span class="stars">★★★★★</span> <span class="rating-score">5.0</span></div>
+              <h3 class="product-card__title">示例产品名称 #{{ i }}</h3>
+              <div class="product-card__price">$99.00</div>
+              <div class="product-card__variants">
+                <span class="variant-chip active">规格 A</span>
+                <span class="variant-chip">规格 B</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  /* 板块整体布局 */
+  .showcase-section {
+    padding: 40px 15px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .showcase-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 25px;
+    font-weight: 600;
+  }
+
+  /* 响应式网格布局: 默认 2列 -> 中屏 3-4列 -> 大屏 6列 */
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (min-width: 640px) {
+    .showcase-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+  }
+  @media (min-width: 900px) {
+    .showcase-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  @media (min-width: 1200px) {
+    .showcase-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  /* 产品卡片通用样式 */
+  .product-card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .product-card:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  }
+
+  /* 图片比例与悬停切换逻辑 */
+  .product-card__media {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding-top: 100%; /* 1:1 正方形比例 */
+    overflow: hidden;
+    background-color: #f7f7f7;
+  }
+  .product-card__img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .product-card__img--hover {
+    opacity: 0;
+  }
+  .product-card__media:hover .product-card__img--hover {
+    opacity: 1;
+  }
+  .product-card__media:hover .product-card__img--primary {
+    transform: scale(1.03);
+  }
+
+  /* 卡片文案区域 */
+  .product-card__info {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  /* 5星评价样式 */
+  .product-card__rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  .product-card__rating .stars {
+    color: #ffb400;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .product-card__rating .rating-score {
+    font-size: 11px;
+    color: #666;
+  }
+
+  /* 标题样式 */
+  .product-card__title {
+    font-size: 13px;
+    line-height: 1.3;
+    margin: 4px 0 6px 0;
+    font-weight: 500;
+    height: 2.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .product-card__title a {
+    text-decoration: none;
+    color: #222;
+  }
+
+  /* 价格样式 */
+  .product-card__price {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+  }
+
+  /* 规格/变体 按钮组 */
+  .product-card__variants {
+    margin-top: auto;
+    padding-top: 6px;
+  }
+  .variant-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .variant-chip {
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #333;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .variant-chip:hover, .variant-chip.active {
+    border-color: #000;
+    background: #000;
+    color: #fff;
+  }
+
+  .placeholder-bg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .placeholder-svg {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sectionContainer = document.querySelector('#showcase-{{ section.id }}');
+    if (!sectionContainer) return;
+
+    sectionContainer.querySelectorAll('[data-variant-btn]').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const card = this.closest('[data-product-card]');
+        const targetImageUrl = this.getAttribute('data-variant-image');
+
+        const group = this.parentElement;
+        group.querySelectorAll('[data-variant-btn]').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+
+        if (targetImageUrl && targetImageUrl.length > 0) {
+          const primaryImg = card.querySelector('[data-primary-image]');
+          if (primaryImg) {
+            primaryImg.src = targetImageUrl;
+          }
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "6列产品展示",
+  "tag": "section",
+  "class": "section-product-grid-6col",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "板块标题",
+      "default": "热门产品推荐"
+    },
+    {
+      "type": "select",
+      "id": "show_source",
+      "label": "产品数据来源",
+      "options": [
+        { "value": "collections", "label": "选择多个系列聚合 (Collection List)" },
+        { "value": "manual", "label": "手动选择特定产品 (Product List)" }
+      ],
+      "default": "collections"
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "选择多个产品系列 (来源为多系列时生效)",
+      "limit": 5
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "手动选择产品 (来源为手动时生效)",
+      "limit": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "6列产品展示"
+    }
+  ]
+}
+{% endschema %}

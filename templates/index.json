@@ -140,6 +140,15 @@
         "padding_bottom": 12
       }
     },
+    "multi-product-list":{
+      "type":"multi-product-list",
+      "settings":{
+        "title":"热门产品推荐",
+        "collection":"elegan",
+        "products_to_show":12,
+
+      }
+    },
     "collage-0": {
       "type": "collage",
       "blocks": {
@@ -433,6 +442,7 @@
     "hero_carousel_craft",
     "featured-category",
     "rich_text",
+    "multi-product-list",
     "collage-0",
     "featured_collection_aE3rWy",
     "rich_text_Mfjztd",
