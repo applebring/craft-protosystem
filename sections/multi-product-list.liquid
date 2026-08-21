@@ -45,12 +45,17 @@
               {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
             </div>
             <div class="product-card__info">
-              <div class="AirReviews-Widget AirReviews-Widget--Stars product-card__rating" style="margin-top:0.7rem" data-review-avg="5" data-review-count="0"></div>
-              <h3 class="product-card__title">示例产品名称 #{{ i }}</h3>
+              <div
+                class="AirReviews-Widget AirReviews-Widget--Stars"
+                style="margin-top:0.7rem"
+                data-review-avg="{{ product.metafields.air_reviews_product.review_avg }}"
+                data-review-count="{{ product.metafields.air_reviews_product.review_count }}"
+                ></div>
+              <h3 class="product-card__title">product name #{{ i }}</h3>
               <div class="product-card__price">$99.00</div>
               <div class="product-card__variants">
-                <span class="variant-chip active">规格 A</span>
-                <span class="variant-chip">规格 B</span>
+                <span class="variant-chip active">A</span>
+                <span class="variant-chip">B</span>
               </div>
             </div>
           </div>

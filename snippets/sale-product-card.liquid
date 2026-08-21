@@ -29,13 +29,13 @@
 
   <!-- 产品详细信息 -->
   <div class="product-card__info">
-    <!-- 星级评价 (通过 AirReviews App 渲染) -->
-    <div
-      class="AirReviews-Widget AirReviews-Widget--Stars product-card__rating"
-      style="margin-top:0.7rem"
-      data-review-avg="{{ product.metafields.air_reviews_product.review_avg }}"
-      data-review-count="{{ product.metafields.air_reviews_product.review_count }}"
-    ></div>
+    <!-- 星级评价 (通过 AirReviews App 渲染，无评价时显示灰色空星) -->
+   <div
+  class="AirReviews-Widget AirReviews-Widget--Stars"
+  style="margin-top:0.7rem"
+  data-review-avg="{{ product.metafields.air_reviews_product.review_avg }}"
+  data-review-count="{{ product.metafields.air_reviews_product.review_count }}"
+></div>
 
     <!-- 产品标题 -->
     <h3 class="product-card__title">
