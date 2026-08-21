@@ -140,13 +140,15 @@
         "padding_bottom": 12
       }
     },
-    "multi-product-list":{
-      "type":"multi-product-list",
-      "settings":{
-        "title":"热门产品推荐",
-        "collection":"elegan",
-        "products_to_show":12,
-        "collection_list":["elegan","elysian-r","nova"]
+    "multi-product-list": {
+      "type": "multi-product-list",
+      "settings": {
+        "title": "热门产品推荐",
+        "collection_list": [
+          "elegan",
+          "elysian-r",
+          "nova"
+        ]
       }
     },
     "collage-0": {
