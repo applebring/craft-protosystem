@@ -29,11 +29,13 @@
 
   <!-- 产品详细信息 -->
   <div class="product-card__info">
-    <!-- 5星评价展示 -->
-    <div class="product-card__rating" title="5.0 out of 5 stars">
-      <span class="stars">★★★★★</span>
-      <span class="rating-score">5.0</span>
-    </div>
+    <!-- 星级评价 (通过 AirReviews App 渲染) -->
+    <div
+      class="AirReviews-Widget AirReviews-Widget--Stars product-card__rating"
+      style="margin-top:0.7rem"
+      data-review-avg="{{ product.metafields.air_reviews_product.review_avg }}"
+      data-review-count="{{ product.metafields.air_reviews_product.review_count }}"
+    ></div>
 
     <!-- 产品标题 -->
     <h3 class="product-card__title">

@@ -45,7 +45,7 @@
               {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
             </div>
             <div class="product-card__info">
-              <div class="product-card__rating"><span class="stars">★★★★★</span> <span class="rating-score">5.0</span></div>
+              <div class="AirReviews-Widget AirReviews-Widget--Stars product-card__rating" style="margin-top:0.7rem" data-review-avg="5" data-review-count="0"></div>
               <h3 class="product-card__title">示例产品名称 #{{ i }}</h3>
               <div class="product-card__price">$99.00</div>
               <div class="product-card__variants">
@@ -145,21 +145,9 @@
     flex-grow: 1;
   }
 
-  /* 5星评价样式 */
+  /* 星级评价样式 (AirReviews App 渲染) */
   .product-card__rating {
-    display: flex;
-    align-items: center;
-    gap: 4px;
     margin-bottom: 4px;
-  }
-  .product-card__rating .stars {
-    color: #ffb400;
-    font-size: 12px;
-    letter-spacing: 1px;
-  }
-  .product-card__rating .rating-score {
-    font-size: 11px;
-    color: #666;
   }
 
   /* 标题样式 */
