@@ -146,7 +146,7 @@
         "title":"热门产品推荐",
         "collection":"elegan",
         "products_to_show":12,
-
+        "collection_list":["elegan","elysian-r","nova"]
       }
     },
     "collage-0": {
