@@ -1,0 +1,238 @@
+{%- style -%}
+.warranty-list-section{
+    background-color: {{ section.settings.background_color}};
+    padding: {{ section.settings.padding}};
+    @media screen and (min-width: 750px) {
+        padding: {{ section.settings.mobile_padding}};
+    }
+}
+.multicolumn-card__image-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px; /* 设置最小高度，可根据需要调整 */
+}
+.multicolumn-card__image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+.media--adapt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    min-height: 100px;
+    background: transparent;
+}
+.media--adapt img,
+.media--adapt svg {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 80%;
+    max-height: 120px; /* 限制最大高度，保持统一 */
+    object-fit: contain;
+    object-position: center;
+}
+@media screen and (max-width: 749px) {
+    .media--adapt img,
+    .media--adapt svg {
+        max-height: 100px;
+    }
+}
+.multicolumn-card__info{
+    text-align: center;
+}
+{%- endstyle -%}
+
+<div class="warranty-list-section multicolumn color-{{ section.settings.color_scheme }} gradient background-{{ section.settings.background_style }} no-heading">
+  <div class="page-width section-{{ section.id }}-padding isolate">
+    <slider-component class="slider-mobile-gutter">
+      <ul class="multicolumn-list contains-content-container grid grid--2-col-tablet-down grid--{{ section.settings.columns_desktop }}-col-desktop"
+          id="Slider-{{ section.id }}"
+          role="list">
+        {%- for block in section.blocks -%}
+          <li id="Slide-{{ section.id }}-{{ forloop.index }}"
+              class="multicolumn-list__item grid__item"
+              {{ block.shopify_attributes }}>
+            <div class="multicolumn-card content-container">
+              {%- if block.settings.link != blank -%}
+                <a class="link animate-arrow" href="{{ block.settings.link }}">
+              {%- endif -%}
+                <div class="multicolumn-card__image-wrapper multicolumn-card__image-wrapper--full-width multicolumn-card-spacing">
+                  <div class="media--transparent media--adapt">
+                    {%- if block.settings.icon != blank -%}
+                      <img
+                        src="{{ block.settings.icon | img_url: 'master' }}"
+                        alt="{{ block.settings.title | escape }}"
+                        loading="lazy"
+                        width="{{ block.settings.icon.width }}"
+                        height="{{ block.settings.icon.height }}"
+                        class="multicolumn-card__image"
+                        style="width: auto; height: auto; max-width: 80%; max-height: 120px; object-fit: contain;"
+                      >
+                    {%- else -%}
+                      <!-- 默认兜底图标：简约保障盾牌 SVG -->
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 60px; height: 60px; display: block; flex-shrink: 0;">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      </svg>
+                    {%- endif -%}
+                  </div>
+                </div>
+              {%- if block.settings.link != blank -%}
+                </a>
+              {%- endif -%}
+
+              <div class="multicolumn-card__info">
+                {%- if block.settings.link != blank -%}
+                  <a class="link animate-arrow" href="{{ block.settings.link }}">
+                {%- endif -%}
+                  <strong>{{ block.settings.title | default: 'Service Title' }}</strong>
+                  <br>
+                  <span class="text-body">{{ block.settings.description | default: 'Service description goes here.' }}</span>
+                  <span class="icon-wrap">&nbsp;
+                    <svg viewBox="0 0 14 10" fill="none" aria-hidden="true" focusable="false" role="presentation" class="icon icon-arrow" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M8.537.808a.5.5 0 01.817-.162l4 4a.5.5 0 010 .708l-4 4a.5.5 0 11-.708-.708L11.793 5.5H1a.5.5 0 010-1h10.793L8.646 1.354a.5.5 0 01-.109-.546z" fill="currentColor"/>
+                    </svg>
+                  </span> 
+                {%- if block.settings.link != blank -%}
+                  </a>
+                {%- endif -%}
+              </div>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </slider-component>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product Guarantees",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        { "value": "background-1", "label": "Accent 1" },
+        { "value": "background-2", "label": "Accent 2" },
+        { "value": "inverse", "label": "Inverse" }
+      ],
+      "default": "background-1",
+      "label": "Color scheme"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#959595"
+    },
+    {
+      "type": "text",
+      "id": "padding",
+      "label": "Padding",
+      "default": "2rem 0"
+    },
+    {
+      "type": "text",
+      "id": "mobile_padding",
+      "label": "Mobile padding",
+      "default": "0 0"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" }
+      ],
+      "default": "primary",
+      "label": "Row background"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4,
+      "label": "Number of columns on desktop"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service_item",
+      "name": "Guarantee Item",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon (SVG or PNG)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Authenticity Guaranteed"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "100% verified original products."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Guarantees",
+      "blocks": [
+        {
+          "type": "service_item",
+          "settings": {
+            "title": "Authenticity Guaranteed",
+            "description": "100% verified original products sourced directly."
+          }
+        },
+        {
+          "type": "service_item",
+          "settings": {
+            "title": "Secure Checkout",
+            "description": "Encrypted and safe payment processing methods."
+          }
+        },
+        {
+          "type": "service_item",
+          "settings": {
+            "title": "24/7 Support",
+            "description": "Dedicated customer assistance at any time."
+          }
+        },
+        {
+          "type": "service_item",
+          "settings": {
+            "title": "Money-Back Guarantee",
+            "description": "Hassle-free refunds within 30 days."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

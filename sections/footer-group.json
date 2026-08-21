@@ -11,6 +11,59 @@
   "name": "t:sections.footer.name",
   "type": "footer",
   "sections": {
+    "custom-footer-services": {
+      "type": "warranty-list",
+      "settings": {
+        "color_scheme": "background-1",
+        "background_style": "primary",
+        "background_color": "#f5f5f5",
+        "columns_desktop": 4
+      },
+      "blocks": {
+        "service_1": {
+          "type": "service_item",
+          "settings": {
+            "title": "Fast & Free Shipping",
+            "description": "Reliable delivery on all in-stock orders.",
+            "link": "",
+            "icon": "shopify://shop_images/warranty-icon-1.png?v=1787300317",
+          }
+        },
+        "service_2": {
+          "type": "service_item",
+          "settings": {
+            "title": "Secure Checkout",
+            "description": "Encrypted and safe payment processing methods.",
+            "icon": "shopify://shop_images/warranty-icon-2.png?v=1787300317",
+            "link": ""
+          }
+        },
+        "service_3": {
+          "type": "service_item",
+          "settings": {
+            "title": "45-Day Price Match",
+            "description": "Try risk-free with our 45-day return policy.",
+            "icon": "shopify://shop_images/warranty-icon-3.png?v=1787300317",
+            "link": ""
+          }
+        },
+        "service_4": {
+          "type": "service_item",
+          "settings": {
+            "title": "2-Year Warranty",
+            "description": "Submit a claim for a hassle-free replacement.",
+            "icon": "shopify://shop_images/warranty-icon-4.png?v=1787300317",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "service_1",
+        "service_2",
+        "service_3",
+        "service_4"
+      ]
+    },
     "newsletter": {
       "type": "newsletter",
       "blocks": {
@@ -75,6 +128,7 @@
     }
   },
   "order": [
+    "custom-footer-services",
     "newsletter",
     "footer"
   ]
