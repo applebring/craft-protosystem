@@ -8,15 +8,80 @@
  * ------------------------------------------------------------
  */
 {
-  "current": "Craft",
+  "current": {
+    "blocks": {
+      "3722566555113014764": {
+        "type": "shopify://apps/air-reviews-1/blocks/app-embed/c4e1e9ca-4d46-4e76-bc39-7e42417cb327",
+        "disabled": false,
+        "settings": {}
+      }
+    },
+    "color_schemes": {
+      "scheme-1": {
+        "settings": {
+          "background": "#edf1fb",
+          "background_gradient": "",
+          "text": "#252525",
+          "button": "#2C332F",
+          "button_label": "#FFFFFF",
+          "secondary_button_label": "#505655",
+          "shadow": "#252525"
+        }
+      },
+      "scheme-2": {
+        "settings": {
+          "background": "#FFFFFF",
+          "background_gradient": "",
+          "text": "#252525",
+          "button": "#252525",
+          "button_label": "#FFFFFF",
+          "secondary_button_label": "#252525",
+          "shadow": "#252525"
+        }
+      },
+      "scheme-3": {
+        "settings": {
+          "background": "#878787",
+          "background_gradient": "",
+          "text": "#FFFFFF",
+          "button": "#FFFFFF",
+          "button_label": "#716A56",
+          "secondary_button_label": "#FFFFFF",
+          "shadow": "#252525"
+        }
+      },
+      "scheme-4": {
+        "settings": {
+          "background": "#9f9c9c",
+          "background_gradient": "",
+          "text": "#FFFFFF",
+          "button": "#FFFFFF",
+          "button_label": "#000145",
+          "secondary_button_label": "#FFFFFF",
+          "shadow": "#252525"
+        }
+      },
+      "scheme-5": {
+        "settings": {
+          "background": "#3F5147",
+          "background_gradient": "",
+          "text": "#FFFFFF",
+          "button": "#FFFFFF",
+          "button_label": "#3F5147",
+          "secondary_button_label": "#FFFFFF",
+          "shadow": "#252525"
+        }
+      }
+    }
+  },
   "presets": {
     "Craft": {
       "logo_width": 100,
       "productgrid": "product-1",
-    "size_image_grid": "auto",
-    "t_product": false,
-    "second_image": false,
-    "enable_review": true,
+      "size_image_grid": "auto",
+      "t_product": false,
+      "second_image": false,
+      "enable_review": true,
       "color_schemes": {
         "scheme-1": {
           "settings": {
