@@ -3,7 +3,7 @@
   包含: 双图悬停切换、标题、5星评价、规格点击切图、支持多系列聚合或手动选品
 {% endcomment %}
 
-<div class="showcase-section" id="showcase-{{ section.id }}">
+<div class="showcase-section page-width" id="showcase-{{ section.id }}">
   <div class="showcase-container">
     {% if section.settings.title != blank %}
       <h2 class="showcase-title">{{ section.settings.title }}</h2>
@@ -63,8 +63,6 @@
 <style>
   /* 板块整体布局 */
   .showcase-section {
-    padding: 40px 15px;
-    max-width: 1440px;
     margin: 0 auto;
   }
   .showcase-title {
